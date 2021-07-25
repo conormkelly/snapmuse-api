@@ -13,7 +13,7 @@ async function getCuratedPhotos({ count }) {
   const posts = pexelResponse.photos.map((photo) => {
     return {
       id: photo.id,
-      title: generateTitle(url),
+      title: generateTitle(photo.url),
       createdAt: new Date().toISOString(),
       src: {
         large: photo.src.large,

@@ -8,9 +8,15 @@ const {
   deleteAllPosts,
 } = require('../controllers/posts');
 
+const { addComment, getPostComments } = require('../controllers/comments');
+
 // Associate controllers with routes
 postsRouter.get('/', getAllPosts);
 postsRouter.post('/', loadPosts);
 postsRouter.delete('/', deleteAllPosts);
+
+// Comments
+postsRouter.post('/:postId/comments', addComment);
+postsRouter.get('/:postId/comments', getPostComments);
 
 module.exports = postsRouter;
