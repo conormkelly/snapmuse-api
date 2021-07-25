@@ -4,8 +4,8 @@
   "description": "Express API for Snapmuse webapp.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "local": "nodemon -r dotenv/config.js app.js"
+    "start": "node server.js",
+    "local": "nodemon -r dotenv/config.js server.js"
   },
   "keywords": [],
   "author": "Conor Kelly <conormpkelly@gmail.com>",
@@ -15,6 +15,8 @@
     "nodemon": "^2.0.12"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^5.13.3",
+    "pexels": "^1.2.1"
   }
 }
