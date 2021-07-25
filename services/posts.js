@@ -18,7 +18,12 @@ async function getAllPosts({ cutoffDate }) {
   return response;
 }
 
+async function deletePosts() {
+  await Post.deleteMany({});
+}
+
 module.exports = {
   getAllPosts,
   loadPosts,
+  deletePosts,
 };
