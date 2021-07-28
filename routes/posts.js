@@ -8,10 +8,14 @@ const {
   deleteAllPosts,
 } = require('../controllers/posts');
 
+// Controller methods
 const { addComment, getPostComments } = require('../controllers/comments');
 
+// Middleware
+const {verifyToken} = require('../middleware/auth');
+
 // Associate controllers with routes
-postsRouter.get('/', getAllPosts);
+postsRouter.get('/', verifyToken, getAllPosts);
 postsRouter.post('/', loadPosts);
 postsRouter.delete('/', deleteAllPosts);
 
