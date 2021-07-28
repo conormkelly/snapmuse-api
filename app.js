@@ -1,18 +1,28 @@
 // Configures the Express API
+
 const express = require('express');
 const app = express();
 
-// Middleware
-app.use(express.json());
+// Import middleware
+const invalidJSONBodyHandler = require('./middleware/invalidJSONBodyHandler');
+const invalidRouteHandler = require('./middleware/invalidRouteHandler');
+const errorHandler = require('./middleware/errorHandler');
 
 // Import routes
 const routes = require('./routes/main');
+
+// Configure middleware
+app.use(express.json());
+app.use(invalidJSONBodyHandler);
 
 // TODO: add security middleware
 
 // Add routes
 app.use(routes);
+// Handle 404s
+app.use(invalidRouteHandler);
 
-// TODO: add 404, error handler middleware
+// Centralized error handling
+app.use(errorHandler);
 
 module.exports = app;

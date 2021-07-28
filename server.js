@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const app = require('./app');
 
+// Wait for DB to connect before starting API
 mongoose
   .connect(process.env.MONGO_URI, {
     useUnifiedTopology: true,
