@@ -1,2 +1,5 @@
 node_modules/
 .env
+
+# Exclude test .mp3 files from the repo
+public/

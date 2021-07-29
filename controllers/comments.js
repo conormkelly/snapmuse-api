@@ -5,9 +5,8 @@ const ErrorResponse = require('../utils/ErrorResponse');
 
 async function addComment(req, res, next) {
   // TODO: validate comment in middleware
-  const { parentId, text } = req.body;
+  let { parentId, text } = req.body;
   const { postId } = req.params;
-  // req.file!
 
   // Validate post exists
   const post = await Post.findOne({ _id: postId });
@@ -18,13 +17,15 @@ async function addComment(req, res, next) {
   }
 
   // Validate parent exists if provided
-  if (parentId !== null) {
+  if (parentId !== 'null') {
     const parentComment = await Comment.findOne({ _id: parentId });
     if (!parentComment) {
       return next(
         new ErrorResponse({ statusCode: 404, message: 'Comment not found.' })
       );
     }
+  } else {
+    parentId = null;
   }
 
   // TODO: s3 service to save files?
