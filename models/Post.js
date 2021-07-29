@@ -6,7 +6,7 @@ const postSchema = new mongoose.Schema(
     pexelsId: Number,
     title: String,
     createdAt: Date,
-    src: {
+    imageSrc: {
       large: { type: String },
       medium: { type: String },
       small: { type: String },

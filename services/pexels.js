@@ -15,7 +15,7 @@ async function getCuratedPhotos({ count }) {
       id: photo.id,
       title: generateTitle(photo.url),
       createdAt: new Date().toISOString(),
-      src: {
+      imageSrc: {
         large: photo.src.large,
         medium: photo.src.medium,
         small: photo.src.small,
