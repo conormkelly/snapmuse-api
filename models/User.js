@@ -33,7 +33,7 @@ UserSchema.pre('save', async function (next) {
 
 UserSchema.methods.getToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_COOKIE_EXPIRY_DAYS,
+    expiresIn: process.env.JWT_EXPIRY_DAYS,
   });
 };
 

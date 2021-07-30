@@ -18,7 +18,7 @@ async function register(req, res, next) {
 
   const user = await User.create({ username, password });
   const token = user.getToken();
-  return sendToken(token, 201, res);
+  return res.status(200).json({ success: true, token });
 }
 
 async function login(req, res, next) {
@@ -45,41 +45,15 @@ async function login(req, res, next) {
   }
 
   const token = user.getToken();
-  return sendToken(token, 200, res);
+  return res.status(200).json({ success: true, token });
 }
 
 async function logout(req, res, next) {
-  res.cookie(process.env.JWT_COOKIE_NAME, 'none', {
-    expires: Date.now(),
-    httpOnly: true,
-  });
-
   return res.status(200).json({
     success: true,
+    token: null
   });
 }
-
-// Helper function
-const sendToken = (token, statusCode, res) => {
-  const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    options.secure = true;
-  }
-
-  return res
-    .status(statusCode)
-    .cookie(process.env.JWT_COOKIE_NAME, token, options)
-    .json({
-      success: true,
-      token,
-    });
-};
 
 // TODO: temporary For testing tokens
 function test(req, res, next) {
