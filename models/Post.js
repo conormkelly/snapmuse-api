@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 
 const postSchema = new mongoose.Schema(
   {
-    pexelsId: Number,
+    pexelsId: { type: Number, select: false },
     title: String,
-    createdAt: Date,
+    createdAt: { type: Date, default: Date.now },
     imageSrc: {
       large: { type: String },
       medium: { type: String },

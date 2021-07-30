@@ -4,6 +4,7 @@ const postsRouter = express.Router();
 // Add controller methods
 const {
   getAllPosts,
+  getPostById,
   loadPosts,
   deleteAllPosts,
 } = require('../controllers/posts');
@@ -15,7 +16,8 @@ const { addComment, getPostComments } = require('../controllers/comments');
 const { verifyToken } = require('../middleware/auth');
 
 // Associate controllers with routes
-postsRouter.get('/', verifyToken, getAllPosts);
+postsRouter.get('/', getAllPosts);
+postsRouter.get('/:postId', getPostById);
 postsRouter.post('/', loadPosts);
 postsRouter.delete('/', deleteAllPosts);
 

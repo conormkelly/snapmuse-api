@@ -5,6 +5,16 @@ async function loadPosts(req, res, next) {
   res.status(200).json({ success: true, message: 'Successfully added posts.' });
 }
 
+async function getPostById(req, res, next) {
+  const { postId } = req.params;
+
+  const post = await postsService.getPostById(postId);
+  if (!post) {
+    return res.status(404).json({ success: false, data: null });
+  }
+  return res.status(200).json({ success: true, data: post });
+}
+
 async function getAllPosts(req, res, next) {
   // Determine date 1 week ago
   const cutoff = new Date();
@@ -23,6 +33,7 @@ async function deleteAllPosts(req, res, next) {
 
 module.exports = {
   getAllPosts,
+  getPostById,
   loadPosts,
   deleteAllPosts,
 };
