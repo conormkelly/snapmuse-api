@@ -4,7 +4,6 @@ const commentsService = require('../services/comments');
 const ErrorResponse = require('../utils/ErrorResponse');
 const xss = require('xss');
 
-const mongoose = require('mongoose');
 const audioStorageService = require('../services/audioStorage');
 
 async function addComment(req, res, next) {
@@ -19,12 +18,11 @@ async function addComment(req, res, next) {
   }
 
   // Create the comment to generate an ObjectId for the file upload,
-  // We also don't have the parentId or text fields until the audioStorageService
+  // We also don't have the text field until the audioStorageService
   // function has processed the req.body
   const comment = new Comment({
     postId,
-    parentId: null,
-    userId: res.locals.user._id,
+    username: res.locals.user.username,
     text: null,
     recordingSrc: null,
   });
@@ -33,7 +31,7 @@ async function addComment(req, res, next) {
   const file = await audioStorageService.upload(
     {
       commentId: comment._id.toString(),
-      userId: res.locals.user._id.toString(),
+      username: res.locals.user.username,
     },
     req,
     res
@@ -42,41 +40,21 @@ async function addComment(req, res, next) {
     comment.recordingSrc = file.location;
   }
 
-  const { parentId, text } = req.body;
+  // Add text field
+  comment.text = req.body.text ? xss(req.body.text) : null;
 
-  // Validate parent exists if provided
-  if (parentId) {
-    const isValidObjectId = mongoose.isValidObjectId(parentId);
-
-    if (isValidObjectId) {
-      // Can only comment on a top level comment - no arbitrary nesting for simplicity's sake
-      const parentComment = await Comment.findOne({
-        _id: parentId,
-        parentId: null,
-      });
-      if (!parentComment) {
-        return next(
-          new ErrorResponse({ statusCode: 404, message: 'Comment not found.' })
-        );
-      }
-    } else {
-      return next(
-        new ErrorResponse({ statusCode: 404, message: 'Comment not found.' })
-      );
-    }
+  if (comment.text || comment.recordingSrc) {
+    await comment.save();
+    return res.status(201).json({ success: true, data: comment });
+  } else {
+    return res.status(400).json({ sucess: false, data: null });
   }
-
-  comment.text = text ? xss(text) : null;
-
-  await comment.save();
-
-  return res.status(201).json({ success: true, data: comment });
 }
 
 async function getPostComments(req, res, next) {
   const { postId } = req.params;
   const comments = await commentsService.getPostComments({ postId });
-  return res.status(200).json({ success: true, comments });
+  return res.status(200).json({ success: true, data: comments });
 }
 
 module.exports = {

@@ -1,4 +1,5 @@
 const Comment = require('../models/Comment');
+const mongoose = require('mongoose');
 
 async function addComment({ postId, comment }) {
   // TODO: Validate postId etc
@@ -8,7 +9,10 @@ async function addComment({ postId, comment }) {
 }
 
 async function getPostComments({ postId }) {
-  const results = await Comment.find({ postId });
+  let results;
+  if (mongoose.isValidObjectId(postId)) {
+    results = await Comment.find({ postId }).sort({ createdAt: -1 });
+  }
   return results;
 }
 
