@@ -10,7 +10,11 @@ const {
 } = require('../controllers/posts');
 
 // Controller methods
-const { addComment, getPostComments } = require('../controllers/comments');
+const {
+  addComment,
+  getPostComments,
+  downloadAudio,
+} = require('../controllers/comments');
 
 // Middleware
 const { verifyToken } = require('../middleware/auth');
@@ -24,5 +28,8 @@ postsRouter.delete('/', deleteAllPosts);
 // Comments
 postsRouter.post('/:postId/comments', verifyToken, addComment);
 postsRouter.get('/:postId/comments', getPostComments);
+
+// File download
+postsRouter.get('/:postId/comments/:commentId/audio', downloadAudio);
 
 module.exports = postsRouter;
