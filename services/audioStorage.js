@@ -27,10 +27,10 @@ const s3Uploader = multer({
     bucket: process.env.S3_AUDIO_BUCKET_NAME,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     metadata: function (req, file, cb) {
-      cb(null, { username: req.username });
+      cb(null, { userId: req.userId });
     },
     key: function (req, file, cb) {
-      cb(null, req.audioFilename);
+      cb(null, req.filename);
     },
   }),
 });
@@ -38,9 +38,9 @@ const s3Uploader = multer({
 /**
  * Returns the file metadata and modifies req.body to include multipart form fields.
  */
-function upload({ commentId, username }, req, res) {
-  req.audioFilename = commentId;
-  req.username = username;
+function upload({ commentId, userId }, req, res) {
+  req.filename = commentId;
+  req.userId = userId;
 
   return new Promise((resolve, reject) => {
     s3Uploader.single('audio')(req, res, function (err) {

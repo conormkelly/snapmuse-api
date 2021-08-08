@@ -1,7 +1,7 @@
 // Pexels
 const pexels = require('pexels');
 const pexelsClient = pexels.createClient(process.env.PEXELS_API_KEY);
-const Posts = require('../models/Post');
+const Post = require('../models/Post');
 
 const axios = require('axios');
 
@@ -11,7 +11,7 @@ function toUppercase(word) {
 }
 
 async function getCuratedPhotos({ count, pageSize }) {
-  let existingPhotoIds = await Posts.find({}).select({ _id: 0, pexelsId: 1 });
+  let existingPhotoIds = await Post.findAll();
   existingPhotoIds = new Set(existingPhotoIds.map((p) => p.pexelsId));
 
   const randomWords = await axios.get(
@@ -31,11 +31,9 @@ async function getCuratedPhotos({ count, pageSize }) {
         pexelsId: photo.id,
         title: toUppercase(randomWords.data.pop()),
         createdAt: new Date().toISOString(),
-        imageSrc: {
-          large: photo.src.large,
-          medium: photo.src.medium,
-          small: photo.src.small,
-        },
+        imageSrc: photo.src.large,
+        // imageSrcLarge: photo.src.large,
+        // imageSrcSmall: photo.src.small,
       });
     }
   }

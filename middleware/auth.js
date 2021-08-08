@@ -27,7 +27,7 @@ function verifyToken(req, res, next) {
     if (err) {
       return next(ERROR_RESPONSE.UNAUTHORIZED);
     } else {
-      User.findOne({ _id: payload.id })
+      User.findByPk(payload.id)
         .then((user) => {
           res.locals.user = user;
           return next();

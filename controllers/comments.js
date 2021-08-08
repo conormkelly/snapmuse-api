@@ -13,7 +13,7 @@ async function addComment(req, res, next) {
   const { postId } = req.params;
 
   // Validate post exists
-  const post = await Post.findOne({ _id: postId });
+  const post = await Post.findByPk(postId);
   if (!post) {
     return next(
       new ErrorResponse({ statusCode: 404, message: 'Post not found.' })
@@ -23,9 +23,9 @@ async function addComment(req, res, next) {
   // Create the comment to generate an ObjectId for the file upload,
   // We also don't have the text field until the audioStorageService
   // function has processed the req.body
-  const comment = new Comment({
+  const comment = Comment.build({
     postId,
-    username: res.locals.user.username,
+    userId: res.locals.user.id,
     text: null,
     recordingSrc: null,
   });
@@ -33,8 +33,8 @@ async function addComment(req, res, next) {
   // Upload the file, and extract req.body multipart form fields
   const file = await audioStorageService.upload(
     {
-      commentId: comment._id.toString(),
-      username: res.locals.user.username,
+      commentId: comment.id,
+      userId: res.locals.user.id,
     },
     req,
     res
@@ -46,12 +46,24 @@ async function addComment(req, res, next) {
   // Add text field
   comment.text = req.body.text ? xss(req.body.text) : null;
 
-  if (comment.text || comment.recordingSrc) {
-    await comment.save();
-    return res.status(201).json({ success: true, data: comment });
-  } else {
+  if (!comment.text && !comment.recordingSrc) {
     return res.status(400).json({ sucess: false, data: null });
   }
+  await comment.save();
+
+  const responseObject = {
+    id: comment.dataValues.id,
+    postId: comment.dataValues.postId,
+    user: { username: res.locals.user.username },
+    text: comment.dataValues.text,
+    recordingSrc: comment.dataValues.recordingSrc,
+    createdAt: comment.dataValues.createdAt,
+  };
+
+  return res.status(201).json({
+    success: true,
+    data: responseObject,
+  });
 }
 
 async function getPostComments(req, res, next) {

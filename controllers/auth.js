@@ -1,3 +1,5 @@
+// TODO: extract model refs to service layer
+
 const User = require('../models/User');
 const ErrorResponse = require('../utils/ErrorResponse');
 
@@ -6,7 +8,8 @@ async function register(req, res, next) {
   const { username, password } = req.body;
 
   // Check for existing user
-  const existingUser = await User.findOne({ username });
+  const existingUser = await User.isRegistered(username);
+
   if (existingUser) {
     return next(
       new ErrorResponse({
@@ -24,7 +27,8 @@ async function register(req, res, next) {
 async function login(req, res, next) {
   const { username, password } = req.body;
 
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ where: { username } });
+
   if (!user) {
     return next(
       new ErrorResponse({
@@ -51,19 +55,12 @@ async function login(req, res, next) {
 async function logout(req, res, next) {
   return res.status(200).json({
     success: true,
-    token: null
+    token: null,
   });
-}
-
-// TODO: temporary For testing tokens
-function test(req, res, next) {
-  console.log(res.locals.user);
-  return res.status(200).json({ success: true, message: 'YAY!' });
 }
 
 module.exports = {
   register,
   login,
   logout,
-  test,
 };

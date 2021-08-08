@@ -1,55 +1,63 @@
-const mongoose = require('mongoose');
-
-// Prevents warning in console
-// See https://mongoosejs.com/docs/deprecations.html
-mongoose.set('useCreateIndex', true);
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const UserSchema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-    },
-    password: {
-      type: String,
-      // select: false,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
+const UserModel = sequelize.define('user', {
+  id: {
+    type: DataTypes.UUIDV4,
+    defaultValue: Sequelize.UUIDV4,
+    unique: true,
+    primaryKey: true,
   },
-  {
-    versionKey: false,
-  }
-);
-
-// Add index to enforce unique username
-UserSchema.index(
-  { username: 1 },
-  { unique: true, background: true, dropDups: true }
-);
-
-// Encrypt password using bcrypt
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    next();
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  isAdmin: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  },
+  username: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    unique: true,
+    is: /^[0-9a-z_-]$/i,
+  },
+  password: {
+    type: DataTypes.STRING(60),
+    is: /^[0-9a-f]{60}$/i,
+    allowNull: false,
+  },
 });
 
-UserSchema.methods.getToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRY_DAYS,
-  });
-};
+UserModel.beforeCreate(async (user) => {
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+});
 
-UserSchema.methods.isCorrectPassword = async function (passwordToCheck) {
-  return await bcrypt.compare(passwordToCheck, this.password);
-};
+// Add instance methods
+class User extends UserModel {
+  static async isRegistered(username) {
+    return User.findOne({ where: { username } });
+  }
 
-module.exports = mongoose.model('User', UserSchema);
+  /**
+   * Generates a JWT token for the user.
+   * @returns {string}
+   */
+  getToken() {
+    return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRY_DAYS,
+    });
+  }
+
+  /**
+   * Validate that the supplied password matches the stored salted hash.
+   * @param {string} password
+   * @returns {Promise<boolean>}
+   */
+  async isCorrectPassword(password) {
+    return bcrypt.compare(password, this.password);
+  }
+}
+
+module.exports = User;
