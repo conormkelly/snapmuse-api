@@ -7,6 +7,10 @@ const ERROR_RESPONSE = {
     statusCode: 401,
     message: 'Please provide a valid bearer token.',
   }),
+  NOT_FOUND: new ErrorResponse({
+    statusCode: 404,
+    messages: 'User not found.',
+  }),
 };
 
 /**
@@ -29,8 +33,12 @@ function verifyToken(req, res, next) {
     } else {
       User.findByPk(payload.id)
         .then((user) => {
-          res.locals.user = user;
-          return next();
+          if (user) {
+            res.locals.user = user;
+            return next();
+          } else {
+            return next(ERROR_RESPONSE.NOT_FOUND);
+          }
         })
         .catch((err) => {
           console.log(`Error while finding user: ${err.message}`);
