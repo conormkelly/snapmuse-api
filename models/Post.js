@@ -26,43 +26,48 @@ const PostModel = sequelize.define('post', {
     type: DataTypes.STRING(100),
     allowNull: false,
   },
-  // imageSrcLarge: {
-  //   type: DataTypes.STRING(100),
-  //   allowNull: false,
-  // },
-  // imageSrcSmall: {
-  //   type: DataTypes.STRING(100),
-  //   allowNull: false,
-  // },
 });
 
 // Add instance methods
 class Post extends PostModel {
-  async getComments(options = {}) {
-    let query = {
+  async getComments() {
+    const query = {
       where: { postId: this.id },
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', 'ASC']],
+      include: [{ model: User, attributes: ['username'] }],
     };
 
-    if (options.afterId) {
-      const lastComment = await Comment.findByPk(options.afterId);
+    const result = await Comment.findAll(query);
 
-      if (!lastComment) {
-        throw new Error('No such doc!');
+    // format raw data
+    const parentCommentIndexMap = {};
+    let currentIndex = 0;
+    const comments = [];
+
+    for (const rawComment of result) {
+      const comment = {
+        id: rawComment.id,
+        postId: rawComment.postId,
+        parentId: rawComment.parentId,
+        username: rawComment.user.username,
+        text: rawComment.text,
+        recordingSrc: rawComment.recordingSrc,
+        createdAt: rawComment.createdAt,
+        children: [],
+      };
+
+      // Its a top-level comment
+      if (comment.parentId === null) {
+        comments.push(comment);
+        parentCommentIndexMap[comment.id] = currentIndex;
+        currentIndex += 1;
       } else {
-        query = {
-          where: {
-            id: { [Op.ne]: lastComment.id },
-            postId: this.id,
-            createdAt: { [Op.gte]: lastComment.createdAt },
-          },
-        };
+        const parentIndex = parentCommentIndexMap[comment.parentId];
+        comments[parentIndex].children.push(comment);
       }
     }
-    query.include = [{ model: User, attributes: ['username'] }];
 
-    const result = await Comment.findAll(query);
-    return result;
+    return comments;
   }
 }
 

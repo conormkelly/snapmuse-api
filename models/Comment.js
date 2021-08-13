@@ -17,6 +17,9 @@ const Comment = sequelize.define('comment', {
     },
     allowNull: false,
   },
+  parentId: {
+    type: Sequelize.UUIDV4,
+  },
   userId: {
     type: Sequelize.UUIDV4,
     references: {
@@ -27,6 +30,13 @@ const Comment = sequelize.define('comment', {
   },
   text: DataTypes.STRING(280),
   recordingSrc: DataTypes.STRING(100),
+});
+
+// Comment.belongsTo(Comment, { as: 'Parent' });
+Comment.hasMany(Comment, {
+  as: 'Children',
+  foreignKey: 'parentId',
+  useJunctionTable: false,
 });
 
 module.exports = Comment;

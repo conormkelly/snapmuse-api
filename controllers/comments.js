@@ -27,6 +27,7 @@ async function addComment(req, res, next) {
     postId,
     userId: res.locals.user.id,
     text: null,
+    parentId: null,
     recordingSrc: null,
   });
 
@@ -45,19 +46,23 @@ async function addComment(req, res, next) {
 
   // Add text field
   comment.text = req.body.text ? xss(req.body.text) : null;
+  comment.parentId = req.body.parentId === 'null' ? null : req.body.parentId;
 
   if (!comment.text && !comment.recordingSrc) {
-    return res.status(400).json({ sucess: false, data: null });
+    // TODO: refactor error response here
+    return res.status(400).json({ success: false, data: null });
   }
+
   await comment.save();
 
   const responseObject = {
-    id: comment.dataValues.id,
-    postId: comment.dataValues.postId,
-    user: { username: res.locals.user.username },
-    text: comment.dataValues.text,
-    recordingSrc: comment.dataValues.recordingSrc,
-    createdAt: comment.dataValues.createdAt,
+    id: comment.id,
+    postId: comment.postId,
+    parentId: comment.parentId,
+    username: res.locals.user.username,
+    text: comment.text,
+    recordingSrc: comment.recordingSrc,
+    createdAt: comment.createdAt,
   };
 
   return res.status(201).json({
