@@ -6,9 +6,6 @@ const xss = require('xss');
 
 const audioStorageService = require('../services/audioStorage');
 
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({ region: 'eu-west-1' });
-
 async function addComment(req, res, next) {
   const { postId } = req.params;
 
@@ -78,15 +75,9 @@ async function getPostComments(req, res, next) {
 }
 
 async function downloadAudio(req, res, next) {
-  const params = {
-    Bucket: process.env.S3_AUDIO_BUCKET_NAME,
-    Key: req.params.commentId,
-  };
-
   res.setHeader('Content-Disposition', 'attachment');
-
-  s3.getObject(params)
-    .createReadStream()
+  return audioStorageService
+    .getFileReadstream(req.params.commentId)
     .on('error', (err) => {
       console.log('File download error:', err);
       next(

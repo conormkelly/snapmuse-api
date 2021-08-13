@@ -2,11 +2,10 @@ const AWS = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const s3 = new AWS.S3({ region: 'eu-west-1' });
-
 // Configure AWS credentials
 AWS.config.update({
-  secretAccessKey: process.env.S3_ACCESS_SECRET,
-  accessKeyId: process.env.S3_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   region: 'eu-west-1',
 });
 
@@ -53,4 +52,13 @@ function upload({ commentId, userId }, req, res) {
   });
 }
 
-module.exports = { upload };
+function getFileReadstream(commentId) {
+  return s3
+    .getObject({
+      Bucket: process.env.S3_AUDIO_BUCKET_NAME,
+      Key: commentId,
+    })
+    .createReadStream();
+}
+
+module.exports = { upload, getFileReadstream };
