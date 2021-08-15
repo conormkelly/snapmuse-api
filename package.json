@@ -13,7 +13,7 @@
   "devDependencies": {
     "dotenv": "^10.0.0",
     "nodemon": "^2.0.12",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^4.2.0"
   },
   "dependencies": {
     "aws-sdk": "^2.956.0",
