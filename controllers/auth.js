@@ -19,7 +19,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 
   const user = await authService.createUser({ username, password });
   const token = user.getToken();
-  return res.status(200).json({ success: true, data: token });
+  return res.status(201).json({ success: true, data: token });
 });
 
 exports.login = asyncHandler(async (req, res, next) => {

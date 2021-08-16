@@ -1,3 +1,4 @@
+const sequelize = require('../config/db');
 const User = require('../models/User');
 
 function createUser({ username, password }) {
@@ -5,7 +6,15 @@ function createUser({ username, password }) {
 }
 
 function findUserByUsername(username) {
-  return User.findOne({ where: { username } });
+  return User.findOne({
+    where: {
+      username: sequelize.where(
+        sequelize.fn('LOWER', sequelize.col('username')),
+        'LIKE',
+        `%${username}%`
+      ),
+    },
+  });
 }
 
 function findUserById(userId) {
