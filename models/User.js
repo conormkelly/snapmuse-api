@@ -36,10 +36,6 @@ UserModel.beforeCreate(async (user) => {
 
 // Add instance methods
 class User extends UserModel {
-  static async isRegistered(username) {
-    return User.findOne({ where: { username } });
-  }
-
   /**
    * Generates a JWT token for the user.
    * @returns {string}

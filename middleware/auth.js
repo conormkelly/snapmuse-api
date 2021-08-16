@@ -12,7 +12,7 @@ const ERROR_RESPONSE = {
   }),
   NOT_FOUND: new ErrorResponse({
     statusCode: 404,
-    messages: 'User not found.',
+    message: 'User not found.',
   }),
 };
 

@@ -21,7 +21,7 @@ async function getPostComments({ postId }) {
   const post = await Post.findByPk(postId);
 
   if (!post) {
-    throw new ErrorResponse({ status: 404, message: 'Post not found.' });
+    throw new ErrorResponse({ statusCode: 404, message: 'Post not found.' });
   }
   return post.getComments();
 }

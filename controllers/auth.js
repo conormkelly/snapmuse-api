@@ -6,8 +6,7 @@ const authService = require('../services/auth');
 exports.register = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
 
-  // Check for existing user
-  const existingUser = await authService.isUsernameRegistered(username);
+  const existingUser = await authService.findUserByUsername(username);
 
   if (existingUser) {
     return next(
