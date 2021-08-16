@@ -1,6 +1,9 @@
-const jwt = require('jsonwebtoken');
-const authService = require('../services/auth');
+const asyncHander = require('../utils/asyncHander');
 const ErrorResponse = require('../utils/ErrorResponse');
+
+const authService = require('../services/auth');
+
+const jwt = require('jsonwebtoken');
 
 const ERROR_RESPONSE = {
   UNAUTHORIZED: new ErrorResponse({
@@ -16,7 +19,7 @@ const ERROR_RESPONSE = {
 /**
  * Verifies JWT token and appends the associated user to res.locals.
  */
-function verifyToken(req, res, next) {
+exports.verifyToken = asyncHander(async (req, res, next) => {
   let token = req.header('Authorization') || '';
   if (!token.includes('Bearer ')) {
     return next(ERROR_RESPONSE.UNAUTHORIZED);
@@ -27,26 +30,27 @@ function verifyToken(req, res, next) {
     return next(ERROR_RESPONSE.UNAUTHORIZED);
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-    if (err) {
-      return next(ERROR_RESPONSE.UNAUTHORIZED);
-    } else {
-      authService
-        .findUserById(payload.id)
-        .then((user) => {
-          if (user) {
-            res.locals.user = user;
-            return next();
-          } else {
-            return next(ERROR_RESPONSE.NOT_FOUND);
-          }
-        })
-        .catch((err) => {
-          console.log(`Error while finding user: ${err.message}`);
-          return next(ERROR_RESPONSE.UNAUTHORIZED);
-        });
-    }
+  const payload = await verifyJwt(token, process.env.JWT_SECRET);
+  const user = await authService.findUserById(payload.id);
+  if (user) {
+    res.locals.user = user;
+    return next();
+  } else {
+    return next(ERROR_RESPONSE.NOT_FOUND);
+  }
+});
+
+/**
+ * Helper function to promisify the JWT callback style API.
+ */
+function verifyJwt(token, secret) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, secret, (err, payload) => {
+      if (err) {
+        reject(ERROR_RESPONSE.UNAUTHORIZED);
+      } else {
+        resolve(payload);
+      }
+    });
   });
 }
-
-module.exports = { verifyToken };

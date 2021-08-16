@@ -1,11 +1,13 @@
+const asyncHandler = require('../utils/asyncHander');
 const ErrorResponse = require('../utils/ErrorResponse');
-const xss = require('xss');
 
 const postsService = require('../services/posts');
 const commentsService = require('../services/comments');
 const audioStorageService = require('../services/audioStorage');
 
-async function addComment(req, res, next) {
+const xss = require('xss');
+
+exports.addComment = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
 
   // Validate post exists
@@ -62,15 +64,15 @@ async function addComment(req, res, next) {
       createdAt: comment.createdAt,
     },
   });
-}
+});
 
-async function getPostComments(req, res, next) {
+exports.getPostComments = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
   const comments = await commentsService.getPostComments({ postId });
   return res.status(200).json({ success: true, data: comments });
-}
+});
 
-async function downloadAudio(req, res, next) {
+exports.downloadAudio = asyncHandler((req, res, next) => {
   res.setHeader('Content-Disposition', 'attachment');
   return audioStorageService
     .getFileReadstream(req.params.commentId)
@@ -84,10 +86,4 @@ async function downloadAudio(req, res, next) {
       );
     })
     .pipe(res);
-}
-
-module.exports = {
-  addComment,
-  getPostComments,
-  downloadAudio,
-};
+});

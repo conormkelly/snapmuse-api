@@ -1,9 +1,9 @@
+const asyncHandler = require('../utils/asyncHander');
 const ErrorResponse = require('../utils/ErrorResponse');
 
 const authService = require('../services/auth');
 
-// Controller methods
-async function register(req, res, next) {
+exports.register = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
 
   // Check for existing user
@@ -21,9 +21,9 @@ async function register(req, res, next) {
   const user = await authService.createUser({ username, password });
   const token = user.getToken();
   return res.status(200).json({ success: true, data: token });
-}
+});
 
-async function login(req, res, next) {
+exports.login = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
 
   const user = await authService.findUserByUsername(username);
@@ -49,17 +49,11 @@ async function login(req, res, next) {
 
   const token = user.getToken();
   return res.status(200).json({ success: true, data: token });
-}
+});
 
-async function logout(req, res, next) {
+exports.logout = (req, res, next) => {
   return res.status(200).json({
     success: true,
     data: null,
   });
-}
-
-module.exports = {
-  register,
-  login,
-  logout,
 };
