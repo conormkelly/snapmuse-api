@@ -1,31 +1,27 @@
-const Comment = require('../models/Comment');
-const Post = require('../models/Post');
-const commentsService = require('../services/comments');
 const ErrorResponse = require('../utils/ErrorResponse');
 const xss = require('xss');
 
+const postsService = require('../services/posts');
+const commentsService = require('../services/comments');
 const audioStorageService = require('../services/audioStorage');
 
 async function addComment(req, res, next) {
   const { postId } = req.params;
 
   // Validate post exists
-  const post = await Post.findByPk(postId);
+  const post = await postsService.findById(postId);
   if (!post) {
     return next(
       new ErrorResponse({ statusCode: 404, message: 'Post not found.' })
     );
   }
 
-  // Create the comment to generate an ObjectId for the file upload,
+  // Create the comment to generate an id field for the file upload if present,
   // We also don't have the text field until the audioStorageService
   // function has processed the req.body
-  const comment = Comment.build({
+  const comment = commentsService.build({
     postId,
     userId: res.locals.user.id,
-    text: null,
-    parentId: null,
-    recordingSrc: null,
   });
 
   // Upload the file, and extract req.body multipart form fields
@@ -37,34 +33,34 @@ async function addComment(req, res, next) {
     req,
     res
   );
-  if (file !== undefined) {
-    comment.recordingSrc = file.location;
-  }
 
-  // Add text field
+  // Append fields to the built comment
+  comment.recordingSrc = file ? file.location : null;
   comment.text = req.body.text ? xss(req.body.text) : null;
   comment.parentId = req.body.parentId === 'null' ? null : req.body.parentId;
 
   if (!comment.text && !comment.recordingSrc) {
-    // TODO: refactor error response here
-    return res.status(400).json({ success: false, data: null });
+    return next(
+      new ErrorResponse({
+        statusCode: 400,
+        message: `text or audio must be provided`,
+      })
+    );
   }
 
   await comment.save();
 
-  const responseObject = {
-    id: comment.id,
-    postId: comment.postId,
-    parentId: comment.parentId,
-    username: res.locals.user.username,
-    text: comment.text,
-    recordingSrc: comment.recordingSrc,
-    createdAt: comment.createdAt,
-  };
-
   return res.status(201).json({
     success: true,
-    data: responseObject,
+    data: {
+      id: comment.id,
+      postId: comment.postId,
+      parentId: comment.parentId,
+      username: res.locals.user.username,
+      text: comment.text,
+      recordingSrc: comment.recordingSrc,
+      createdAt: comment.createdAt,
+    },
   });
 }
 

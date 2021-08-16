@@ -1,33 +1,32 @@
-// TODO: extract model refs to service layer
-
-const User = require('../models/User');
 const ErrorResponse = require('../utils/ErrorResponse');
+
+const authService = require('../services/auth');
 
 // Controller methods
 async function register(req, res, next) {
   const { username, password } = req.body;
 
   // Check for existing user
-  const existingUser = await User.isRegistered(username);
+  const existingUser = await authService.isUsernameRegistered(username);
 
   if (existingUser) {
     return next(
       new ErrorResponse({
         statusCode: 400,
-        message: 'Username already exists!',
+        message: 'Username already exists. Please try again.',
       })
     );
   }
 
-  const user = await User.create({ username, password });
+  const user = await authService.createUser({ username, password });
   const token = user.getToken();
-  return res.status(200).json({ success: true, token });
+  return res.status(200).json({ success: true, data: token });
 }
 
 async function login(req, res, next) {
   const { username, password } = req.body;
 
-  const user = await User.findOne({ where: { username } });
+  const user = await authService.findUserByUsername(username);
 
   if (!user) {
     return next(
@@ -49,13 +48,13 @@ async function login(req, res, next) {
   }
 
   const token = user.getToken();
-  return res.status(200).json({ success: true, token });
+  return res.status(200).json({ success: true, data: token });
 }
 
 async function logout(req, res, next) {
   return res.status(200).json({
     success: true,
-    token: null,
+    data: null,
   });
 }
 

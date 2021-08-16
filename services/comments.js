@@ -1,12 +1,20 @@
 const Post = require('../models/Post');
+const Comment = require('../models/Comment');
+
 const ErrorResponse = require('../utils/ErrorResponse');
 
-async function addComment({ postId, comment }) {
-  // // TODO: Validate postId etc
-  // const newComment = new Comment({ postId, ...comment });
-  // const result = await newComment.save();
-  // return result;
-  // TODO: THIS ISNT BEING USED!
+/**
+ * Returns an unsaved Comment.
+ * @returns {Comment}
+ */
+function build({ postId, userId }) {
+  return Comment.build({
+    postId,
+    userId,
+    text: null,
+    parentId: null,
+    recordingSrc: null,
+  });
 }
 
 async function getPostComments({ postId }) {
@@ -19,6 +27,6 @@ async function getPostComments({ postId }) {
 }
 
 module.exports = {
-  addComment,
+  build,
   getPostComments,
 };

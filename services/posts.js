@@ -4,33 +4,34 @@ const Post = require('../models/Post');
 const pexelsService = require('./pexels');
 
 // TODO: this API endpoint should only be callable by an admin user
-async function loadPosts({ count }) {
+async function load({ count }) {
   // Get photos from the pexels API in Post model format
   const newPosts = await pexelsService.getCuratedPhotos({
     count,
     pageSize: 25,
   });
+
   await Post.bulkCreate(newPosts);
 }
 
-async function getPostById(postId) {
+async function findById(postId) {
   return Post.findByPk(postId);
 }
 
-async function getAllPosts({ cutoffDate }) {
+async function getAll({ cutoffDate }) {
   // TODO: manage cutoff date for posts
   return Post.findAll({
     order: [['createdAt', 'DESC']],
   });
 }
 
-async function deletePosts() {
+async function deleteAll() {
   return Post.destroy({ where: {} });
 }
 
 module.exports = {
-  getAllPosts,
-  getPostById,
-  loadPosts,
-  deletePosts,
+  getAll,
+  findById,
+  load,
+  deleteAll,
 };

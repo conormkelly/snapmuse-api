@@ -14,7 +14,7 @@ function errorHandler(err, req, res, next) {
   // Return 500 with stock message, to prevent leaking errors to the client
   return res.status(500).json({
     success: false,
-    message: "We're sorry, an unknown error has occurred.",
+    message: "We're sorry, an unknown error has occurred. Please try again.",
   });
 }
 
