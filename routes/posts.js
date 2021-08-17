@@ -16,9 +16,6 @@ const {
   downloadAudio,
 } = require('../controllers/comments');
 
-// Middleware
-const { verifyToken } = require('../middleware/auth');
-
 // Associate controllers with routes
 postsRouter.get('/', getAllPosts);
 postsRouter.get('/:postId', getPostById);
@@ -26,7 +23,8 @@ postsRouter.post('/', loadPosts);
 postsRouter.delete('/', deleteAllPosts);
 
 // Comments
-postsRouter.post('/:postId/comments', verifyToken, addComment);
+// ? TODO: Going to need role-based auth for ADDING + DELETING posts
+postsRouter.post('/:postId/comments', addComment);
 postsRouter.get('/:postId/comments', getPostComments);
 
 // File download

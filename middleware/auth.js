@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const ERROR_RESPONSE = {
   UNAUTHORIZED: new ErrorResponse({
     statusCode: 401,
-    message: 'Please provide a valid bearer token.',
+    message: 'Invalid credentials. Please login and try again.',
   }),
   NOT_FOUND: new ErrorResponse({
     statusCode: 404,

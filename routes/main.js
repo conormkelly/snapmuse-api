@@ -5,8 +5,11 @@ const mainRouter = express.Router();
 const postsRouter = require('./posts');
 const authRouter = require('./auth');
 
+// Middleware
+const { verifyToken } = require('../middleware/auth');
+
 // Associate routes
 mainRouter.use('/auth', authRouter);
-mainRouter.use('/posts', postsRouter);
+mainRouter.use('/posts', verifyToken, postsRouter);
 
 module.exports = mainRouter;
