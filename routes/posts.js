@@ -6,7 +6,6 @@ const {
   getAllPosts,
   getPostById,
   loadPosts,
-  deleteAllPosts,
 } = require('../controllers/posts');
 
 // Controller methods
@@ -23,7 +22,6 @@ const { adminOnly } = require('../middleware/auth');
 postsRouter.get('/', getAllPosts);
 postsRouter.get('/:postId', getPostById);
 postsRouter.post('/', adminOnly, loadPosts);
-postsRouter.delete('/', adminOnly, deleteAllPosts);
 
 // Comments
 postsRouter.post('/:postId/comments', addComment);

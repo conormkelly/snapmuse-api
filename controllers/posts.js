@@ -29,8 +29,3 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
   const resultSet = await postsService.getAll({ cutoffDate: oneWeekAgo });
   res.status(200).json({ success: true, data: resultSet });
 });
-
-exports.deleteAllPosts = asyncHandler(async (req, res, next) => {
-  await postsService.deleteAll();
-  return res.status(200).json({ success: true, message: 'Deleted all posts.' });
-});
