@@ -1,17 +1,18 @@
-const fakePexelsClient = {
-  createClient: () => {
-    return {
-      photos: {
-        curated: () => {
-          return [
-            { id: 1, src: { large: 'http://www.fake-image.com/image1.jpg' } },
-            { id: 2, src: { large: 'http://www.fake-image.com/image2.jpg' } },
-            { id: 3, src: { large: 'http://www.fake-image.com/image3.jpg' } },
-          ];
-        },
-      },
-    };
-  },
-};
+function getCuratedPhotos() {
+  return [
+    {
+      pexelsId: 1,
+      title: 'Title1',
+      createdAt: new Date().toISOString(),
+      imageSrc: 'http://test.com/image1.jpg',
+    },
+    {
+      pexelsId: 2,
+      title: 'Title2',
+      createdAt: new Date().toISOString(),
+      imageSrc: 'http://test.com/image2.jpg',
+    },
+  ];
+}
 
-module.exports = fakePexelsClient;
+module.exports = { getCuratedPhotos };

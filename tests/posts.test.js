@@ -19,6 +19,9 @@ const request = require('supertest');
 // Main application
 const app = require('../app.js');
 
+// Helper service
+const authService = require('../services/auth');
+
 describe('Posts - list all', () => {
   it('should not be able to view posts without valid token', async () => {
     const res = await request(app).get('/posts');
@@ -61,5 +64,69 @@ describe('Posts - list all', () => {
     expect(res.body.data).toEqual([]);
 
     expect(Object.keys(res.body).length).toEqual(2);
+  });
+});
+
+describe('Posts - add', () => {
+  it('should not be able to add posts if not admin', async () => {
+    // Arrange - login and get a token
+    const tokenRes = await request(app)
+      .post('/auth/register')
+      .send({ username: 'joesoap', password: 'Password1' });
+
+    // Act
+    const res = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    // Verify statusCode matches the expected value for the test case
+    expect(res.statusCode).toEqual(401);
+    // Verify res.body properties match
+    expect(res.body).toHaveProperty('success');
+    expect(res.body.success).toEqual(false);
+
+    expect(res.body).toHaveProperty('message');
+    expect(res.body.message).toEqual(
+      'You must be an administrator to perform this action.'
+    );
+
+    expect(Object.keys(res.body).length).toEqual(2);
+  });
+
+  it('should be able to add posts if admin', async () => {
+    // Arrange
+    // Register and get a token
+    const tokenRes = await request(app)
+      .post('/auth/register')
+      .send({ username: 'admin', password: 'Admin1234' });
+
+    // Make that user an admin
+    const adminUser = await authService.findUserByUsername('admin');
+    adminUser.isAdmin = true;
+    await adminUser.save();
+
+    // Act
+    const postAddRes = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    // Assert
+    expect(postAddRes.statusCode).toEqual(201);
+    expect(postAddRes.body.message).toBeDefined();
+
+    const postGetRes = await request(app)
+      .get('/posts')
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    expect(postGetRes.statusCode).toEqual(200);
+
+    // Verify res.body properties match
+    expect(postGetRes.body).toHaveProperty('success');
+    expect(postGetRes.body.success).toEqual(true);
+
+    expect(postGetRes.body).toHaveProperty('data');
+    expect(postGetRes.body.data.length).toBeGreaterThan(0);
+
+    expect(Object.keys(postGetRes.body).length).toEqual(2);
   });
 });

@@ -10,6 +10,10 @@ const ERROR_RESPONSE = {
     statusCode: 401,
     message: 'Invalid credentials. Please login and try again.',
   }),
+  ACCESS_DENIED: new ErrorResponse({
+    statusCode: 401,
+    message: 'You must be an administrator to perform this action.',
+  }),
   NOT_FOUND: new ErrorResponse({
     statusCode: 404,
     message: 'User not found.',
@@ -39,6 +43,13 @@ exports.verifyToken = asyncHander(async (req, res, next) => {
     return next(ERROR_RESPONSE.NOT_FOUND);
   }
 });
+
+exports.adminOnly = (req, res, next) => {
+  if (!res.locals.user.isAdmin) {
+    return next(ERROR_RESPONSE.ACCESS_DENIED);
+  }
+  next();
+};
 
 /**
  * Helper function to promisify the JWT callback style API.

@@ -5,7 +5,7 @@ const postsService = require('../services/posts');
 
 exports.loadPosts = asyncHandler(async (req, res, next) => {
   await postsService.load({ count: 3 });
-  res.status(200).json({ success: true, message: 'Successfully added posts.' });
+  res.status(201).json({ success: true, message: 'Successfully added posts.' });
 });
 
 exports.getPostById = asyncHandler(async (req, res, next) => {
