@@ -36,4 +36,18 @@ describe('General', () => {
 
     expect(Object.keys(res.body).length).toEqual(2);
   });
+
+  it('should respond with 404 for non-existent routes', async () => {
+    const res = await request(app).get('/nonexistent/path').send();
+    // Verify statusCode matches the expected value for the test case
+    expect(res.statusCode).toEqual(404);
+    // Verify res.body properties match
+    expect(res.body).toHaveProperty('success');
+    expect(res.body.success).toEqual(false);
+
+    expect(res.body).toHaveProperty('message');
+    expect(res.body.message).toEqual('Cannot GET /nonexistent/path');
+
+    expect(Object.keys(res.body).length).toEqual(2);
+  });
 });
