@@ -130,3 +130,120 @@ describe('Posts - add', () => {
     expect(Object.keys(postGetRes.body).length).toEqual(2);
   });
 });
+
+describe('Posts - get by id', () => {
+  it('should be able to view a post with valid token', async () => {
+    // Arrange - Make sure there are posts
+    // Register and get a token
+    const tokenRes = await request(app)
+      .post('/auth/register')
+      .send({ username: 'admin1', password: 'Admin1234' });
+
+    // Make that user an admin
+    const adminUser = await authService.findUserByUsername('admin1');
+    adminUser.isAdmin = true;
+    await adminUser.save();
+
+    // Add the posts
+    const postAddRes = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    expect(postAddRes.statusCode).toEqual(201);
+    expect(postAddRes.body.success).toEqual(true);
+
+    const getPostsRes = await request(app)
+      .get('/posts')
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    // Verify getPosts
+    expect(getPostsRes.statusCode).toEqual(200);
+    expect(getPostsRes.body).toHaveProperty('success');
+    expect(getPostsRes.body.success).toEqual(true);
+    expect(getPostsRes.body).toHaveProperty('data');
+    expect(getPostsRes.body.data.length).toBeGreaterThan(0);
+    expect(Object.keys(getPostsRes.body).length).toEqual(2);
+
+    const firstPost = getPostsRes.body.data[0];
+
+    // Act
+    const getPostByIdRes = await request(app)
+      .get(`/posts/${firstPost.id}`)
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    expect(getPostByIdRes.statusCode).toEqual(200);
+    expect(getPostByIdRes.body).toHaveProperty('success');
+    expect(getPostByIdRes.body.success).toEqual(true);
+    expect(getPostByIdRes.body).toHaveProperty('data');
+    expect(getPostByIdRes.body.data.id).toEqual(firstPost.id);
+    expect(Object.keys(getPostByIdRes.body).length).toEqual(2);
+  });
+
+  it('should not be able to view a post without valid token', async () => {
+    // Arrange - Make sure there are posts
+    // Register and get a token
+    const tokenRes = await request(app)
+      .post('/auth/register')
+      .send({ username: 'admin2', password: 'Admin1234' });
+
+    // Make that user an admin
+    const adminUser = await authService.findUserByUsername('admin2');
+    adminUser.isAdmin = true;
+    await adminUser.save();
+
+    // Add the posts
+    const postAddRes = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    expect(postAddRes.statusCode).toEqual(201);
+    expect(postAddRes.body.success).toEqual(true);
+
+    const getPostsRes = await request(app)
+      .get('/posts')
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    // Verify getPosts
+    expect(getPostsRes.statusCode).toEqual(200);
+    expect(getPostsRes.body).toHaveProperty('success');
+    expect(getPostsRes.body.success).toEqual(true);
+    expect(getPostsRes.body).toHaveProperty('data');
+    expect(getPostsRes.body.data.length).toBeGreaterThan(0);
+    expect(Object.keys(getPostsRes.body).length).toEqual(2);
+
+    const firstPost = getPostsRes.body.data[0];
+
+    // Act
+    const getPostByIdRes = await request(app).get(`/posts/${firstPost.id}`);
+
+    expect(getPostByIdRes.statusCode).toEqual(401);
+    expect(getPostByIdRes.body).toHaveProperty('success');
+    expect(getPostByIdRes.body.success).toEqual(false);
+    expect(getPostByIdRes.body).toHaveProperty('message');
+    expect(getPostByIdRes.body.message).toEqual(
+      'Invalid credentials. Please login and try again.'
+    );
+    expect(Object.keys(getPostByIdRes.body).length).toEqual(2);
+  });
+
+  it('should return 404 if no post found', async () => {
+    // Get a token
+    const tokenRes = await request(app)
+      .post('/auth/register')
+      .send({ username: 'post404', password: 'Test4321' });
+
+    const nonexistentId = '1234';
+
+    // Add the posts
+    const res = await request(app)
+      .get(`/posts/${nonexistentId}`)
+      .set('Authorization', `Bearer ${tokenRes.body.data}`);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty('success');
+    expect(res.body.success).toEqual(false);
+    expect(res.body).toHaveProperty('message');
+    expect(res.body.message).toEqual('Post not found.');
+    expect(Object.keys(res.body).length).toEqual(2);
+  });
+});
