@@ -25,13 +25,8 @@ async function getAll({ cutoffDate }) {
   });
 }
 
-async function deleteAll() {
-  return Post.destroy({ where: {} });
-}
-
 module.exports = {
   getAll,
   findById,
   load,
-  deleteAll,
 };
