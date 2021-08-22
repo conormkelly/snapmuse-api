@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const UserModel = sequelize.define('user', {
   id: {
     type: DataTypes.UUID,
-    defaultValue: () => DataTypes.UUIDV4,
+    defaultValue: DataTypes.UUIDV4,
     unique: true,
     primaryKey: true,
     allowNull: false
