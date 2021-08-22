@@ -1,5 +1,4 @@
-const { DataTypes, Sequelize, Op } = require('sequelize');
-const { v4: uuidv4 } = require('uuid');
+const { DataTypes, Sequelize, Op, UUIDV4 } = require('sequelize');
 const sequelize = require('../config/db');
 
 const Comment = require('./Comment');
@@ -9,8 +8,8 @@ Comment.belongsTo(User);
 
 const PostModel = sequelize.define('post', {
   id: {
-    type: DataTypes.STRING(36),
-    defaultValue: () => uuidv4(),
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     unique: true,
     primaryKey: true,
     allowNull: false

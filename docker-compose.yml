@@ -5,7 +5,7 @@ services:
     image: postgres:12
     environment:
       - POSTGRES_DB=postgres
-      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
@@ -26,3 +26,5 @@ services:
       - 3000:3000
     links:
       - db
+    volumes:
+      - ./:/usr/src/app/
