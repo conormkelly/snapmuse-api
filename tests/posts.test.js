@@ -24,7 +24,7 @@ const authService = require('../services/auth');
 
 describe('Posts - list all', () => {
   it('should not be able to view posts without valid token', async () => {
-    const res = await request(app).get('/posts');
+    const res = await request(app).get('/api/posts');
     // Verify statusCode matches the expected value for the test case
     expect(res.statusCode).toEqual(401);
     // Verify res.body properties match
@@ -42,14 +42,14 @@ describe('Posts - list all', () => {
   it('should be able to view posts with a valid token', async () => {
     // Arrange - login and get a token
     const tokenResponse = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ username: 'posttest1', password: 'Test1234' });
 
     expect(tokenResponse.body.data).toBeDefined();
 
     // Act
     const res = await request(app)
-      .get('/posts')
+      .get('/api/posts')
       .set('Authorization', `Bearer ${tokenResponse.body.data}`);
 
     // Assert
@@ -71,12 +71,12 @@ describe('Posts - add', () => {
   it('should not be able to add posts if not admin', async () => {
     // Arrange - login and get a token
     const tokenRes = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ username: 'joesoap', password: 'Password1' });
 
     // Act
     const res = await request(app)
-      .post('/posts')
+      .post('/api/posts')
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     // Verify statusCode matches the expected value for the test case
@@ -97,7 +97,7 @@ describe('Posts - add', () => {
     // Arrange
     // Register and get a token
     const tokenRes = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ username: 'admin', password: 'Admin1234' });
 
     // Make that user an admin
@@ -107,7 +107,7 @@ describe('Posts - add', () => {
 
     // Act
     const postAddRes = await request(app)
-      .post('/posts')
+      .post('/api/posts')
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     // Assert
@@ -115,7 +115,7 @@ describe('Posts - add', () => {
     expect(postAddRes.body.message).toBeDefined();
 
     const postGetRes = await request(app)
-      .get('/posts')
+      .get('/api/posts')
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     expect(postGetRes.statusCode).toEqual(200);
@@ -136,7 +136,7 @@ describe('Posts - get by id', () => {
     // Arrange - Make sure there are posts
     // Register and get a token
     const tokenRes = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ username: 'admin1', password: 'Admin1234' });
 
     // Make that user an admin
@@ -146,14 +146,14 @@ describe('Posts - get by id', () => {
 
     // Add the posts
     const postAddRes = await request(app)
-      .post('/posts')
+      .post('/api/posts')
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     expect(postAddRes.statusCode).toEqual(201);
     expect(postAddRes.body.success).toEqual(true);
 
     const getPostsRes = await request(app)
-      .get('/posts')
+      .get('/api/posts')
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     // Verify getPosts
@@ -168,7 +168,7 @@ describe('Posts - get by id', () => {
 
     // Act
     const getPostByIdRes = await request(app)
-      .get(`/posts/${firstPost.id}`)
+      .get(`/api/posts/${firstPost.id}`)
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     expect(getPostByIdRes.statusCode).toEqual(200);
@@ -183,7 +183,7 @@ describe('Posts - get by id', () => {
     // Arrange - Make sure there are posts
     // Register and get a token
     const tokenRes = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ username: 'admin2', password: 'Admin1234' });
 
     // Make that user an admin
@@ -193,14 +193,14 @@ describe('Posts - get by id', () => {
 
     // Add the posts
     const postAddRes = await request(app)
-      .post('/posts')
+      .post('/api/posts')
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     expect(postAddRes.statusCode).toEqual(201);
     expect(postAddRes.body.success).toEqual(true);
 
     const getPostsRes = await request(app)
-      .get('/posts')
+      .get('/api/posts')
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     // Verify getPosts
@@ -214,7 +214,7 @@ describe('Posts - get by id', () => {
     const firstPost = getPostsRes.body.data[0];
 
     // Act
-    const getPostByIdRes = await request(app).get(`/posts/${firstPost.id}`);
+    const getPostByIdRes = await request(app).get(`/api/posts/${firstPost.id}`);
 
     expect(getPostByIdRes.statusCode).toEqual(401);
     expect(getPostByIdRes.body).toHaveProperty('success');
@@ -229,14 +229,14 @@ describe('Posts - get by id', () => {
   it('should return 404 if no post found', async () => {
     // Get a token
     const tokenRes = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ username: 'post404', password: 'Test4321' });
 
     const nonexistentId = '1234';
 
     // Add the posts
     const res = await request(app)
-      .get(`/posts/${nonexistentId}`)
+      .get(`/api/posts/${nonexistentId}`)
       .set('Authorization', `Bearer ${tokenRes.body.data}`);
 
     expect(res.statusCode).toEqual(404);

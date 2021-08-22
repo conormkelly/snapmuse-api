@@ -22,7 +22,7 @@ const app = require('../app.js');
 const testCategories = [
   {
     title: 'Auth - registration',
-    endpoint: '/auth/register',
+    endpoint: '/api/auth/register',
     testCases: [
       {
         label: 'should be able to register with valid new username',
@@ -125,7 +125,7 @@ const testCategories = [
   },
   {
     title: 'Auth - login',
-    endpoint: '/auth/login',
+    endpoint: '/api/auth/login',
     testCases: [
       {
         label: 'should be able to login with valid credentials',

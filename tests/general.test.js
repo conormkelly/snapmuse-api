@@ -22,7 +22,7 @@ const app = require('../app.js');
 describe('General', () => {
   it('should handle invalid JSON req body', async () => {
     const res = await request(app)
-      .post('/auth/login')
+      .post('/api/auth/login')
       .set('Content-Type', 'application/json')
       .send('{ THIS IS NOT VALID JSON');
     // Verify statusCode matches the expected value for the test case
@@ -38,7 +38,7 @@ describe('General', () => {
   });
 
   it('should respond with 404 for non-existent routes', async () => {
-    const res = await request(app).get('/nonexistent/path').send();
+    const res = await request(app).get('/api/nonexistent/path').send();
     // Verify statusCode matches the expected value for the test case
     expect(res.statusCode).toEqual(404);
     // Verify res.body properties match
@@ -46,7 +46,7 @@ describe('General', () => {
     expect(res.body.success).toEqual(false);
 
     expect(res.body).toHaveProperty('message');
-    expect(res.body.message).toEqual('Cannot GET /nonexistent/path');
+    expect(res.body.message).toEqual('Cannot GET /api/nonexistent/path');
 
     expect(Object.keys(res.body).length).toEqual(2);
   });

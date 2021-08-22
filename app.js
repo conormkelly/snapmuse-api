@@ -21,7 +21,7 @@ app.use(invalidJSONBodyHandler);
 
 
 // Add routes
-app.use(routes);
+app.use('/api', routes);
 // Handle 404s
 app.use(invalidRouteHandler);
 
