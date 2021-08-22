@@ -1,16 +1,17 @@
 const { DataTypes, Sequelize } = require('sequelize');
+const { v4: uuidv4 } = require('uuid');
 const sequelize = require('../config/db');
 
 const Comment = sequelize.define('comment', {
   id: {
-    type: DataTypes.UUIDV4,
-    defaultValue: Sequelize.UUIDV4,
+    type: DataTypes.STRING(36),
+    defaultValue: () => uuidv4(),
     unique: true,
     primaryKey: true,
     allowNull: false,
   },
   postId: {
-    type: Sequelize.UUIDV4,
+    type: DataTypes.STRING(36),
     references: {
       model: 'posts',
       key: 'id',
@@ -18,10 +19,11 @@ const Comment = sequelize.define('comment', {
     allowNull: false,
   },
   parentId: {
-    type: Sequelize.UUIDV4,
+    type: DataTypes.STRING(36),
+    defaultValue: null
   },
   userId: {
-    type: Sequelize.UUIDV4,
+    type: DataTypes.STRING(36),
     references: {
       model: 'users',
       key: 'id',

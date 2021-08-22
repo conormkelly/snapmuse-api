@@ -3,13 +3,15 @@ const sequelize = require('../config/db');
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 
 const UserModel = sequelize.define('user', {
   id: {
-    type: DataTypes.UUIDV4,
-    defaultValue: Sequelize.UUIDV4,
+    type: DataTypes.STRING(36),
+    defaultValue: () => uuidv4(),
     unique: true,
     primaryKey: true,
+    allowNull: false
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,

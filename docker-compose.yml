@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:12
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    environment:
+      NODE_ENV: production
+      DB_CONNECTION_STRING: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/postgres
+      PEXELS_API_KEY: ${PEXELS_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRY_DAYS: ${JWT_EXPIRY_DAYS}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_AUDIO_BUCKET_NAME: ${S3_AUDIO_BUCKET_NAME}    
+    ports:
+      - 3000:3000
+    links:
+      - db

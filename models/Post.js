@@ -1,4 +1,5 @@
 const { DataTypes, Sequelize, Op } = require('sequelize');
+const { v4: uuidv4 } = require('uuid');
 const sequelize = require('../config/db');
 
 const Comment = require('./Comment');
@@ -8,10 +9,11 @@ Comment.belongsTo(User);
 
 const PostModel = sequelize.define('post', {
   id: {
-    type: DataTypes.UUIDV4,
-    defaultValue: Sequelize.UUIDV4,
+    type: DataTypes.STRING(36),
+    defaultValue: () => uuidv4(),
     unique: true,
     primaryKey: true,
+    allowNull: false
   },
   pexelsId: {
     type: DataTypes.INTEGER,
