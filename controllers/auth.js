@@ -17,7 +17,11 @@ exports.register = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const user = await authService.createUser({ username, password });
+  const user = await authService.createUser({
+    username,
+    password,
+    isAdmin: false,
+  });
   const token = user.getToken();
   return res.status(201).json({ success: true, data: token });
 });

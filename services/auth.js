@@ -1,8 +1,8 @@
 const sequelize = require('../config/db');
 const User = require('../models/User');
 
-function createUser({ username, password }) {
-  return User.create({ username, password });
+function createUser({ username, password, isAdmin }) {
+  return User.create({ username, password, isAdmin });
 }
 
 function findUserByUsername(username) {
