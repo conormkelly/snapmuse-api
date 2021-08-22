@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 
 // Import middleware
+const helmet = require('helmet');
 const cors = require("cors");
 const invalidJSONBodyHandler = require('./middleware/invalidJSONBodyHandler');
 const invalidRouteHandler = require('./middleware/invalidRouteHandler');
@@ -12,8 +13,8 @@ const errorHandler = require('./middleware/errorHandler');
 // Import routes
 const routes = require('./routes/main');
 
-// TODO: add security middleware
 // Configure middleware
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(invalidJSONBodyHandler);
