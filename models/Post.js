@@ -24,7 +24,7 @@ const PostModel = sequelize.define('post', {
     allowNull: false,
   },
   imageSrc: {
-    type: DataTypes.STRING(100),
+    type: DataTypes.STRING(150),
     allowNull: false,
   },
 });
