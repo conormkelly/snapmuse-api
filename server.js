@@ -15,7 +15,7 @@ sequelize
         userService
           .createUser({
             username: 'admin',
-            password: process.env.ADMIN_USER_PASSWORD,
+            password: process.env.ADMIN_USER_APP_PASSWORD,
             isAdmin: true,
           })
           .then(() => {
