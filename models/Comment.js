@@ -30,7 +30,7 @@ const Comment = sequelize.define('comment', {
     allowNull: false,
   },
   text: DataTypes.STRING(280),
-  recordingSrc: DataTypes.STRING(100),
+  recordingSrc: DataTypes.STRING(150),
 });
 
 // Comment.belongsTo(Comment, { as: 'Parent' });

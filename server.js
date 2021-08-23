@@ -10,11 +10,19 @@ sequelize
   .then(() => {
     userService.findUserByUsername('admin').then((user) => {
       if (!user) {
-        userService.createUser({
-          username: 'admin',
-          password: process.env.ADMIN_USER_PASSWORD,
-          isAdmin: true,
-        });
+        console.log('No admin user found...');
+
+        userService
+          .createUser({
+            username: 'admin',
+            password: process.env.ADMIN_USER_PASSWORD,
+            isAdmin: true,
+          })
+          .then(() => {
+            console.log('Created admin user!');
+          });
+      } else {
+        console.log('Existing admin user was found.');
       }
     });
   })
