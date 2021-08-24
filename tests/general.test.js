@@ -15,39 +15,47 @@ beforeAll(async () => {
 
 // Test dependency
 const request = require('supertest');
+const { runTests } = require('./helpers/test-runner');
 
 // Main application
 const app = require('../app.js');
 
-describe('General', () => {
-  it('should handle invalid JSON req body', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .set('Content-Type', 'application/json')
-      .send('{ THIS IS NOT VALID JSON');
-    // Verify statusCode matches the expected value for the test case
-    expect(res.statusCode).toEqual(400);
-    // Verify res.body properties match
-    expect(res.body).toHaveProperty('success');
-    expect(res.body.success).toEqual(false);
+const testCategories = [
+  {
+    title: 'General',
+    testCases: [
+      {
+        label: 'should handle invalid JSON req body',
+        arrange: () => {},
+        act: () => {
+          return request(app)
+            .post('/api/auth/login')
+            .set('Content-Type', 'application/json')
+            .send('{ THIS IS NOT VALID JSON');
+        },
+        assertations: {
+          statusCode: 400,
+          body: {
+            success: false,
+            message: 'Invalid JSON body provided.',
+          },
+        },
+      },
+      {
+        label: 'should respond with 404 for non-existent routes',
+        arrange: () => {},
+        act: () => request(app).get('/api/non/existent/route'),
+        assertations: {
+          statusCode: 404,
+          body: {
+            success: false,
+            message: (actualValue) =>
+              expect(actualValue).toEqual('Cannot GET /api/non/existent/route'),
+          },
+        },
+      },
+    ],
+  },
+];
 
-    expect(res.body).toHaveProperty('message');
-    expect(res.body.message).toEqual('Invalid JSON body provided.');
-
-    expect(Object.keys(res.body).length).toEqual(2);
-  });
-
-  it('should respond with 404 for non-existent routes', async () => {
-    const res = await request(app).get('/api/nonexistent/path').send();
-    // Verify statusCode matches the expected value for the test case
-    expect(res.statusCode).toEqual(404);
-    // Verify res.body properties match
-    expect(res.body).toHaveProperty('success');
-    expect(res.body.success).toEqual(false);
-
-    expect(res.body).toHaveProperty('message');
-    expect(res.body.message).toEqual('Cannot GET /api/nonexistent/path');
-
-    expect(Object.keys(res.body).length).toEqual(2);
-  });
-});
+runTests(testCategories);
