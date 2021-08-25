@@ -3,6 +3,7 @@ const sequelize = require('../config/db');
 
 const Comment = require('./Comment');
 const User = require('./User');
+const UserLike = require('./UserLike');
 
 Comment.belongsTo(User);
 
@@ -12,7 +13,7 @@ const PostModel = sequelize.define('post', {
     defaultValue: DataTypes.UUIDV4,
     unique: true,
     primaryKey: true,
-    allowNull: false
+    allowNull: false,
   },
   pexelsId: {
     type: DataTypes.INTEGER,
@@ -31,21 +32,37 @@ const PostModel = sequelize.define('post', {
 
 // Add instance methods
 class Post extends PostModel {
-  async getComments() {
-    const query = {
+  async getComments(userId) {
+    // Get all posts that the user has liked
+    const userLikesQuery = {
+      where: { userId, postId: this.id },
+    };
+
+    const commentsQuery = {
       where: { postId: this.id },
       order: [['createdAt', 'ASC']],
       include: [{ model: User, attributes: ['username'] }],
     };
 
-    const result = await Comment.findAll(query);
+    const [userLikes, rawComments] = await Promise.all([
+      UserLike.findAll(userLikesQuery),
+      Comment.findAll(commentsQuery),
+    ]);
+
+    const likedComments =
+      userLikes && userLikes.length
+        ? userLikes.reduce((acc, val) => {
+            acc.set(val.commentId, val.isLiked);
+            return acc;
+          }, new Map())
+        : new Map();
 
     // format raw data
     const parentCommentIndexMap = {};
     let currentIndex = 0;
     const comments = [];
 
-    for (const rawComment of result) {
+    for (const rawComment of rawComments) {
       const comment = {
         id: rawComment.id,
         postId: rawComment.postId,
@@ -54,6 +71,7 @@ class Post extends PostModel {
         text: rawComment.text,
         recordingSrc: rawComment.recordingSrc,
         createdAt: rawComment.createdAt,
+        isLiked: likedComments.get(rawComment.id) || false,
         children: [],
       };
 

@@ -2,17 +2,14 @@ const express = require('express');
 const postsRouter = express.Router();
 
 // Add controller methods
-const {
-  getAllPosts,
-  getPostById,
-  loadPosts,
-} = require('../controllers/posts');
+const { getAllPosts, getPostById, loadPosts } = require('../controllers/posts');
 
 // Controller methods
 const {
   addComment,
   getPostComments,
   downloadAudio,
+  putCommentIsLikedValue,
 } = require('../controllers/comments');
 
 // Auth middleware
@@ -29,5 +26,8 @@ postsRouter.get('/:postId/comments', getPostComments);
 
 // File download
 postsRouter.get('/:postId/comments/:commentId/audio', downloadAudio);
+
+// Like a comment
+postsRouter.put('/:postId/comments/:commentId/likes', putCommentIsLikedValue);
 
 module.exports = postsRouter;

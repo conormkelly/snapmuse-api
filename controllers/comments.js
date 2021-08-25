@@ -18,39 +18,12 @@ exports.addComment = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // Create the comment to generate an id field for the file upload if present,
-  // We also don't have the text field until the audioStorageService
-  // function has processed the req.body
-  const comment = commentsService.build({
+  const comment = await commentsService.addComment({
     postId,
     userId: res.locals.user.id,
-  });
-
-  // Upload the file, and extract req.body multipart form fields
-  const file = await audioStorageService.upload(
-    {
-      commentId: comment.id,
-      userId: res.locals.user.id,
-    },
     req,
-    res
-  );
-
-  // Append fields to the built comment
-  comment.recordingSrc = file ? file.location : null;
-  comment.text = req.body.text ? xss(req.body.text) : null;
-  comment.parentId = req.body.parentId === 'null' ? null : req.body.parentId;
-
-  if (!comment.text && !comment.recordingSrc) {
-    return next(
-      new ErrorResponse({
-        statusCode: 400,
-        message: `text or audio must be provided`,
-      })
-    );
-  }
-
-  await comment.save();
+    res,
+  });
 
   return res.status(201).json({
     success: true,
@@ -68,11 +41,14 @@ exports.addComment = asyncHandler(async (req, res, next) => {
 
 exports.getPostComments = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
-  const comments = await commentsService.getPostComments({ postId });
+  const comments = await commentsService.getPostComments({
+    postId,
+    userId: res.locals.user.id,
+  });
   return res.status(200).json({ success: true, data: comments });
 });
 
-exports.downloadAudio = asyncHandler((req, res, next) => {
+exports.downloadAudio = (req, res, next) => {
   res.setHeader('Content-Disposition', 'attachment');
   return audioStorageService
     .getFileReadstream(req.params.commentId)
@@ -86,4 +62,41 @@ exports.downloadAudio = asyncHandler((req, res, next) => {
       );
     })
     .pipe(res);
+};
+
+exports.putCommentIsLikedValue = asyncHandler(async (req, res, next) => {
+  const { postId, commentId } = req.params;
+  const { value } = req.body; // TODO: add validator
+
+  const [post, comment] = await Promise.all([
+    postsService.findById(postId),
+    commentsService.findById(commentId),
+  ]);
+
+  if (!post) {
+    return next(
+      new ErrorResponse({ statusCode: 404, message: 'Post not found.' })
+    );
+  }
+
+  if (!comment) {
+    return next(
+      new ErrorResponse({ statusCode: 404, message: 'Comment not found.' })
+    );
+  }
+
+  const wasSuccessful = await commentsService.setIsLiked({
+    commentId,
+    postId,
+    userId: res.locals.user.id,
+    value,
+  });
+
+  if (!wasSuccessful) {
+    return next(new Error('Failed to like the comment'));
+  }
+
+  return res
+    .status(200)
+    .json({ success: true, data: { commentId, isLiked: value } });
 });

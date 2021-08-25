@@ -19,7 +19,7 @@ const Comment = sequelize.define('comment', {
   },
   parentId: {
     type: DataTypes.UUID,
-    defaultValue: null
+    defaultValue: null,
   },
   userId: {
     type: DataTypes.UUID,

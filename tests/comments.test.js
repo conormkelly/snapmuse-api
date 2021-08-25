@@ -19,6 +19,8 @@ const { runTests, getToken, getValidPostId } = require('./helpers/test-runner');
 
 // Main application
 const app = require('../app.js');
+const authService = require('../services/auth');
+const commentsService = require('../services/comments');
 
 const testCategories = [
   {
@@ -122,6 +124,42 @@ const testCategories = [
           body: {
             success: false,
             message: 'Post not found.',
+          },
+        },
+      },
+    ],
+  },
+  {
+    title: 'Comments - like comment',
+    testCases: [
+      {
+        label: 'should be able to like a comment',
+        arrange: async () => {
+          const token = await getToken({ isAdmin: false });
+          const user = await authService.findUserByUsername('standard_user');
+          const postId = await getValidPostId();
+          const comment = await commentsService.addComment({
+            postId,
+            userId: user.id,
+            req: { body: { text: 'This is a test!' } },
+            res: {},
+          });
+          return { token, postId, commentId: comment.id };
+        },
+        act: ({ token, postId, commentId }) => {
+          return request(app)
+            .put(`/api/posts/${postId}/comments/${commentId}/likes`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({ value: true });
+        },
+        assertations: {
+          statusCode: 200,
+          body: {
+            success: true,
+            data: ({ commentId, isLiked }) => {
+              expect(commentId).toBeDefined();
+              expect(isLiked).toEqual(true);
+            },
           },
         },
       },
