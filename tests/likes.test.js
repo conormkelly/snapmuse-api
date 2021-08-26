@@ -77,7 +77,6 @@ const testCategories = [
               // Verify it's an array of length 1
               expect(Array.isArray(actualValue)).toEqual(true);
               expect(actualValue.length).toEqual(1);
-              console.log(actualValue);
             },
           },
         },
