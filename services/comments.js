@@ -59,13 +59,8 @@ async function addComment({ postId, userId, req, res }) {
   return comment;
 }
 
-function setIsLiked({ commentId, postId, userId, value }) {
-  return UserLike.upsert({ commentId, postId, userId, isLiked: value });
-}
-
 module.exports = {
   addComment,
   getPostComments,
   findById,
-  setIsLiked,
 };

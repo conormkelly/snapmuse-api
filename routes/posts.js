@@ -27,7 +27,4 @@ postsRouter.get('/:postId/comments', getPostComments);
 // File download
 postsRouter.get('/:postId/comments/:commentId/audio', downloadAudio);
 
-// Like a comment
-postsRouter.put('/:postId/comments/:commentId/likes', putCommentIsLikedValue);
-
 module.exports = postsRouter;
