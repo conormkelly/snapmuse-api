@@ -31,9 +31,6 @@ exports.upsert = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllUserLikes = asyncHandler(async (req, res, next) => {
-  const allUserLikes = await likesService.getAllUserLikes({
-    userId: res.locals.user.id,
-  });
-
+  const allUserLikes = await likesService.getAllUserLikes(res.locals.user);
   return res.status(200).json({ success: true, data: allUserLikes });
 });

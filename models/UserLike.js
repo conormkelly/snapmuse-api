@@ -1,5 +1,6 @@
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/db');
+const Comment = require('./Comment');
 
 const UserLike = sequelize.define('likes', {
   postId: {
@@ -35,5 +36,7 @@ const UserLike = sequelize.define('likes', {
     defaultValue: false,
   },
 });
+
+UserLike.belongsTo(Comment);
 
 module.exports = UserLike;
