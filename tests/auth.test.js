@@ -119,7 +119,7 @@ const testCategories = [
           body: {
             success: false,
             message:
-              'Password must be 8 - 200 characters in length and contain at least 1 number and 1 uppercase letter.',
+              'Password must be at least 8 characters long and contain at least 1 number, 1 lowercase letter and 1 uppercase letter.',
           },
         },
       },
@@ -136,7 +136,7 @@ const testCategories = [
           body: {
             success: false,
             message:
-              'Password must be 8 - 200 characters in length and contain at least 1 number and 1 uppercase letter.',
+              'Password must be at least 8 characters long and contain at least 1 number, 1 lowercase letter and 1 uppercase letter.',
           },
         },
       },

@@ -8,8 +8,8 @@ const validationMiddleware = require('../middleware/validation');
 const { register, login, logout } = require('../controllers/auth');
 
 // Associate controllers with routes
-authRouter.post('/register', validationMiddleware.auth, register);
-authRouter.post('/login', validationMiddleware.auth, login);
+authRouter.post('/register', validationMiddleware.register, register);
+authRouter.post('/login', validationMiddleware.login, login);
 authRouter.post('/logout', logout);
 
 module.exports = authRouter;

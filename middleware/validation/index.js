@@ -1,7 +1,7 @@
 const ErrorResponse = require('../../utils/ErrorResponse');
 
 // Import schemas
-const authSchema = require('./schemas/auth');
+const authSchemas = require('./schemas/auth');
 
 // Import and instantiate Ajv
 const Ajv = require('ajv').default;
@@ -24,7 +24,8 @@ ajv.addKeyword({
 });
 
 // Compile the schemas into validators
-const authValidator = ajv.compile(authSchema);
+const registrationValidator = ajv.compile(authSchemas.registration);
+const loginValidator = ajv.compile(authSchemas.login);
 
 /**
  * Generates a middleware function for the schema.
@@ -48,5 +49,6 @@ const createMiddlewareValidator = (validator) => {
 };
 
 module.exports = {
-  auth: createMiddlewareValidator(authValidator),
+  register: createMiddlewareValidator(registrationValidator),
+  login: createMiddlewareValidator(loginValidator),
 };
