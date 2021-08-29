@@ -20,7 +20,7 @@ const { runTests, getToken, getValidPostId } = require('./helpers/test-runner');
 // Main application
 const app = require('../app.js');
 
-const testCategories = [
+const tests = [
   {
     title: 'Comments - add text comment',
     testCases: [
@@ -129,4 +129,4 @@ const testCategories = [
   },
 ];
 
-runTests(testCategories);
+runTests(tests);

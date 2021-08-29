@@ -30,7 +30,7 @@ const testCategories = [
         label: 'should be able to like a comment',
         arrange: async () => {
           const token = await getToken({ isAdmin: false });
-          const user = await authService.findUserByUsername('standard_user');
+          const user = await authService.findUserByUsername('standard');
           const postId = await getValidPostId();
           const comment = await commentsService.addComment({
             postId,

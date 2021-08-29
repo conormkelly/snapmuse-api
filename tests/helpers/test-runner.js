@@ -2,11 +2,11 @@ const authService = require('../../services/auth');
 const postsService = require('../../services/posts');
 
 // Test runner
-function runTests(testCategories) {
-  for (const testCategory of testCategories) {
-    describe(testCategory.title, () => {
+function runTests(tests) {
+  for (const category of tests) {
+    describe(category.title, () => {
       // For each test case under the category
-      for (const testCase of testCategory.testCases) {
+      for (const testCase of category.testCases) {
         it(testCase.label, async () => {
           // Apply arrangements steps
           const arrangeResults = await testCase.arrange();
@@ -43,7 +43,7 @@ function runTests(testCategories) {
 // Helper functions
 
 async function getToken({ isAdmin }) {
-  const username = isAdmin ? 'admin_user' : 'standard_user';
+  const username = isAdmin ? 'admin' : 'standard';
 
   let existingUser = await authService.findUserByUsername(username);
   if (!existingUser) {

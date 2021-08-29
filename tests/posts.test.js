@@ -20,10 +20,9 @@ const request = require('supertest');
 const app = require('../app.js');
 
 // Helper services
-const postsService = require('../services/posts');
 const { runTests, getToken, getValidPostId } = require('./helpers/test-runner');
 
-const testCategories = [
+const tests = [
   {
     title: 'Posts - list all',
     testCases: [
@@ -174,4 +173,4 @@ const testCategories = [
   },
 ];
 
-runTests(testCategories);
+runTests(tests);

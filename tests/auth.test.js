@@ -20,7 +20,7 @@ const { runTests } = require('./helpers/test-runner');
 // Main application
 const app = require('../app.js');
 
-const testCategories = [
+const tests = [
   {
     title: 'Auth - registration',
     testCases: [
@@ -201,4 +201,4 @@ const testCategories = [
   },
 ];
 
-runTests(testCategories);
+runTests(tests);
