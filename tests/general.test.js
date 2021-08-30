@@ -30,7 +30,7 @@ const tests = [
         act: () => {
           return request(app)
             .post('/api/auth/login')
-            .set('Content-Type', 'application/json')
+            .set('Content-Type', 'application/json; charset=utf-8')
             .send('{ THIS IS NOT VALID JSON');
         },
         assertations: {
