@@ -17,6 +17,7 @@ services:
       dockerfile: Dockerfile.prod
     environment:
       NODE_ENV: production
+      PORT: 3000
       DB_CONNECTION_STRING: postgres://postgres:${POSTGRES_PASSWORD}@db/postgres
       PEXELS_API_KEY: ${PEXELS_API_KEY}
       JWT_SECRET: ${JWT_SECRET}
