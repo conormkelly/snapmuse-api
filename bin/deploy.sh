@@ -1,4 +1,5 @@
 # Set environment variables
+cd ~/snapmuse-api/
 source ../secrets.sh
 
 # Bounce the containers
