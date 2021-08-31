@@ -19,6 +19,5 @@ jobs:
           chmod 400 deployment.key
       - name: Run deployment script on production server
         run: |
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz 'git -C ~/snapmuse-api fetch origin'
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz 'git -C ~/snapmuse-api checkout "${GITHUB_SHA}"'
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz "git -C ~/snapmuse-api pull"
           ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz "~/snapmuse-api/bin/deploy.sh"
