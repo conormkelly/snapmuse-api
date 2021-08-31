@@ -4,7 +4,7 @@ const ErrorResponse = require('../utils/ErrorResponse');
 const postsService = require('../services/posts');
 
 exports.loadPosts = asyncHandler(async (req, res, next) => {
-  await postsService.load({ count: 3 });
+  await postsService.load({ count: 10 });
   res.status(201).json({ success: true, message: 'Successfully added posts.' });
 });
 
