@@ -1,38 +1,24 @@
-name: CI to Docker hub
+name: CI
 
 on:
   push:
-    branches:
-      - 'main'
-jobs:
-  build:
-    runs-on: ubuntu-20.04
-    steps:
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+    branches: [main]
 
-      - 
-        name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create identity file
         env:
-          NODE_ENV: production
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET}}
-          JWT_EXPIRY_DAYS: 30d
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          S3_AUDIO_BUCKET_NAME: ${{ secrets.S3_AUDIO_BUCKET_NAME }}
-          ADMIN_USER_APP_PASSWORD: ${{ secrets.ADMIN_USER_APP_PASSWORD }}
-        with:
-          context: ./
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/snapmuse-api:latest
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "$SSH_KEY" | base64 --decode  >deployment.key
+          chmod 400 deployment.key
+      - name: Run deployment script on production server
+        run: |
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz git -C ~/snapmuse-api fetch origin
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz git -C ~/snapmuse-api checkout "${GITHUB_SHA}"
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz ~/snapmuse-api/bin/deploy.sh
