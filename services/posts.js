@@ -34,7 +34,7 @@ async function getAll() {
 }
 
 function deleteAll() {
-  return Post.destroy({ force: true });
+  return Post.destroy({ where: {}, force: true });
 }
 
 module.exports = {
