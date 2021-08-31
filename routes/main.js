@@ -14,4 +14,8 @@ mainRouter.use('/auth', authRouter);
 mainRouter.use('/posts', verifyToken, postsRouter);
 mainRouter.use('/likes', verifyToken, likesRouter);
 
+mainRouter.get('/healthcheck', (req, res, next) => {
+  res.status(200).json({ success: true, message: 'Alive and well!' });
+});
+
 module.exports = mainRouter;
