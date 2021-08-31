@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const { Sequelize } = require('../config/db');
 
 // Models
 const Post = require('../models/Post');
@@ -33,13 +33,8 @@ async function getAll() {
   });
 }
 
-function deleteAll() {
-  return Post.destroy({ where: {} });
-}
-
 module.exports = {
   getAll,
   findById,
   load,
-  deleteAll,
 };
