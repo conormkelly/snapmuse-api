@@ -28,8 +28,9 @@ async function setup() {
 async function main() {
   try {
     await setup();
-    app.listen(process.env.PORT, () => {
-      console.log(`Listening on port ${process.env.PORT}.`);
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Listening on port ${PORT}.`);
     });
   } catch (err) {
     console.log(err);
