@@ -35,7 +35,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse({
         statusCode: 401,
-        message: 'Invalid username or password.',
+        message: 'Incorrect username or password.',
       })
     );
   }
@@ -45,7 +45,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse({
         statusCode: 401,
-        message: 'Invalid username or password.',
+        message: 'Incorrect username or password.',
       })
     );
   }

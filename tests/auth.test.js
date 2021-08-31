@@ -75,12 +75,13 @@ const tests = [
         },
       },
       {
-        label: 'should not be able to register with empty username',
+        label:
+          'should not be able to register with username less than 3 characters',
         arrange: () => {}, // TODO: could confirm user exists
         act: () => {
           return request(app)
             .post('/api/auth/register')
-            .send({ username: '', password: 'Test1234' });
+            .send({ username: '123', password: 'Test1234' });
         },
         assertations: {
           statusCode: 400,
@@ -91,7 +92,24 @@ const tests = [
         },
       },
       {
-        label: 'should not be able to register with invalid username',
+        label:
+          'should not be able to register with username longer than 20 characters',
+        arrange: () => {}, // TODO: could confirm user exists
+        act: () => {
+          return request(app)
+            .post('/api/auth/register')
+            .send({ username: 'twenty1charactersuser', password: 'Test1234' });
+        },
+        assertations: {
+          statusCode: 400,
+          body: {
+            success: false,
+            message: 'Username must be between 4 - 20 characters.',
+          },
+        },
+      },
+      {
+        label: 'should not be able to register with non-alphanumeric username',
         arrange: () => {}, // TODO: could confirm user exists
         act: () => {
           return request(app)
@@ -107,12 +125,12 @@ const tests = [
         },
       },
       {
-        label: 'should not be able to register with empty password',
+        label: 'should not be able to register with password that is too short',
         arrange: () => {}, // TODO: could confirm user exists
         act: () => {
           return request(app)
             .post('/api/auth/register')
-            .send({ username: 'EmptyPass', password: '' });
+            .send({ username: 'testuser', password: 'Seven..' });
         },
         assertations: {
           statusCode: 400,
@@ -193,7 +211,7 @@ const tests = [
           statusCode: 401,
           body: {
             success: false,
-            message: 'Invalid username or password.',
+            message: 'Incorrect username or password.',
           },
         },
       },
