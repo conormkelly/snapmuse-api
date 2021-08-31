@@ -33,8 +33,13 @@ async function getAll() {
   });
 }
 
+function deleteAll() {
+  return Post.destroy({ force: true });
+}
+
 module.exports = {
   getAll,
   findById,
   load,
+  deleteAll,
 };
