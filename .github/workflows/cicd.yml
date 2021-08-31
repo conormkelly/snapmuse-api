@@ -13,13 +13,12 @@ jobs:
 
       - name: Create identity file
         env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
+          DEPLOYMENTKEY: ${{ secrets.SSH_KEY }}
         run: |
-          echo TEST!
-          echo "$SSH_KEY" | base64 --decode  >deployment.key
+          echo "$DEPLOYMENTKEY" | base64 --decode  >deployment.key
           chmod 400 deployment.key
       - name: Run deployment script on production server
         run: |
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz git -C ~/snapmuse-api fetch origin
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz git -C ~/snapmuse-api checkout "${GITHUB_SHA}"
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz ~/snapmuse-api/bin/deploy.sh
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz 'git -C ~/snapmuse-api fetch origin'
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz 'git -C ~/snapmuse-api checkout "${GITHUB_SHA}"'
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i deployment.key ubuntu@snapmuse.xyz "~/snapmuse-api/bin/deploy.sh"
