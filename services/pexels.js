@@ -5,11 +5,10 @@ const Post = require('../models/Post');
 
 const axios = require('axios');
 
-// Helper function
-function toUppercase(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
+/**
+ * Retrieves `count` number of unique Pexels photos from the service,
+ * with corresponding randomly generated titles.
+ */
 async function getCuratedPhotos({ count, pageSize }) {
   let existingPhotoIds = await Post.findAll();
   existingPhotoIds = new Set(existingPhotoIds.map((p) => p.pexelsId));
@@ -21,6 +20,9 @@ async function getCuratedPhotos({ count, pageSize }) {
     per_page: Math.max(pageSize, count),
   });
 
+  // Helper function to capitalize the randomly generated titles
+  const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+
   const posts = [];
   for (const photo of pexelResponse.photos) {
     if (posts.length === count) {
@@ -29,11 +31,9 @@ async function getCuratedPhotos({ count, pageSize }) {
     if (!existingPhotoIds.has(photo.id)) {
       posts.push({
         pexelsId: photo.id,
-        title: toUppercase(randomWords.data.pop()),
+        title: capitalize(randomWords.data.pop()),
         createdAt: new Date().toISOString(),
         imageSrc: photo.src.large,
-        // imageSrcLarge: photo.src.large,
-        // imageSrcSmall: photo.src.small,
       });
     }
   }
