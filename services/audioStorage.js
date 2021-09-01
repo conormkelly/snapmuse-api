@@ -9,6 +9,8 @@ AWS.config.update({
   region: 'eu-west-1',
 });
 
+const TEN_MB_IN_BYTES = 10000000;
+
 // Generates a middleware function that is
 // used to extract form fields from the multipart form
 // and to upload the mp3 file to S3
@@ -22,6 +24,7 @@ const s3Uploader = multer({
   },
   storage: multerS3({
     acl: 'public-read',
+    size: TEN_MB_IN_BYTES,
     s3,
     bucket: process.env.S3_AUDIO_BUCKET_NAME,
     contentType: multerS3.AUTO_CONTENT_TYPE,
