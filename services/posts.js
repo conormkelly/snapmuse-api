@@ -20,16 +20,14 @@ async function findById(postId) {
 }
 
 // TODO: hardcoded to just get from last week
-async function getAll() {
-  var cutoffDate = new Date();
-
-  //Change it so that it is 7 days in the past.
-  const oneWeekAgo = cutoffDate.getDate() - 7;
-  cutoffDate.setDate(oneWeekAgo);
-
+async function getAll(params) {
+  const whereClause =
+    params && params.cutoffDate
+      ? { createdAt: { [Sequelize.Op.gte]: params.cutoffDate } }
+      : {};
   return Post.findAll({
     order: [['createdAt', 'DESC']],
-    where: { createdAt: { [Sequelize.Op.gte]: cutoffDate } },
+    where: whereClause,
   });
 }
 

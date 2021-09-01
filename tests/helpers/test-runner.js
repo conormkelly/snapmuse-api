@@ -57,10 +57,10 @@ async function getToken({ isAdmin }) {
 }
 
 async function getValidPostId() {
-  let posts = await postsService.getAll({});
+  let posts = await postsService.getAll();
   if (posts.length === 0) {
     await postsService.load({ count: 3 });
-    posts = await postsService.getAll({});
+    posts = await postsService.getAll();
   }
 
   return posts[0].id;

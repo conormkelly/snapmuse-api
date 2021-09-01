@@ -21,10 +21,10 @@ exports.getPostById = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllPosts = asyncHandler(async (req, res, next) => {
-  // TODO: refactor this
-  const now = new Date();
-  now.setDate(now.getDate() - 7);
-  const oneWeekAgo = now.toISOString();
+  // Note: this is hardcoded to only fetch posts for the last 7 days
+  const cutoffDate = new Date();
+  const oneWeekAgo = cutoffDate.getDate() - 7;
+  cutoffDate.setDate(oneWeekAgo);
 
   const resultSet = await postsService.getAll({ cutoffDate: oneWeekAgo });
   res.status(200).json({ success: true, data: resultSet });
