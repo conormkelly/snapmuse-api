@@ -10,32 +10,42 @@ const axios = require('axios');
  * with corresponding randomly generated titles.
  */
 async function getCuratedPhotos({ count, pageSize }) {
-  let existingPhotoIds = await Post.findAll();
-  existingPhotoIds = new Set(existingPhotoIds.map((p) => p.pexelsId));
+  const existingPhotoIds = await Post.findAll();
+  const photoIdSet = new Set(existingPhotoIds.map((p) => p.pexelsId));
 
+  // We only need a fixed amount of random words so one API call is all that is required
   const randomWords = await axios.get(
     `https://random-word-api.herokuapp.com/word?swear=0&number=${count}`
   );
-  const pexelResponse = await pexelsClient.photos.curated({
-    per_page: Math.max(pageSize, count),
-  });
 
   // Helper function to capitalize the randomly generated titles
   const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
+  
+  // Keep calling Pexels service til we have enough unique photo posts
   const posts = [];
-  for (const photo of pexelResponse.photos) {
-    if (posts.length === count) {
-      break;
+  let page = 1;
+  while (posts.length !== count) {
+    const pexelResponse = await pexelsClient.photos.curated({
+      per_page: Math.max(pageSize, count, page),
+    });
+
+    for (const photo of pexelResponse.photos) {
+      if (posts.length === count) {
+        break;
+      }
+      if (!photoIdSet.has(photo.id)) {
+        posts.push({
+          pexelsId: photo.id,
+          title: capitalize(randomWords.data.pop()),
+          createdAt: new Date().toISOString(),
+          imageSrc: photo.src.large,
+        });
+        photoIdSet.add(photo.id);
+      }
     }
-    if (!existingPhotoIds.has(photo.id)) {
-      posts.push({
-        pexelsId: photo.id,
-        title: capitalize(randomWords.data.pop()),
-        createdAt: new Date().toISOString(),
-        imageSrc: photo.src.large,
-      });
-    }
+    // If page has been exhausted, go to the next one
+    page += 1;
   }
 
   return posts;
