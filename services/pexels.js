@@ -10,7 +10,7 @@ const axios = require('axios');
  * with corresponding randomly generated titles.
  */
 async function getCuratedPhotos({ count, pageSize }) {
-  const existingPhotoIds = await Post.findAll();
+  const existingPhotoIds = await Post.findAll({ attributes: ['pexelsId'] });
   const photoIdSet = new Set(existingPhotoIds.map((p) => p.pexelsId));
 
   // We only need a fixed amount of random words so one API call is all that is required
@@ -21,7 +21,6 @@ async function getCuratedPhotos({ count, pageSize }) {
   // Helper function to capitalize the randomly generated titles
   const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
-  
   // Keep calling Pexels service til we have enough unique photo posts
   const posts = [];
   let page = 1;
