@@ -11,7 +11,7 @@ function findUserByUsername(username) {
       username: sequelize.where(
         sequelize.fn('LOWER', sequelize.col('username')),
         'LIKE',
-        `%${username}%`
+        `%${username.toLocaleLowerCase()}%`
       ),
     },
   });
