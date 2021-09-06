@@ -11,7 +11,7 @@ function errorHandler(err, req, res, next) {
       .json({ success: false, message: err.message });
   }
 
-  // Log error but return 500 with stock message,
+  // Log error but return 500 with generic message,
   // to prevent leaking errors to the client
   console.log(err);
 
