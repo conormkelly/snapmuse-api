@@ -24,6 +24,6 @@ postsRouter.post('/:postId/comments', addComment);
 postsRouter.get('/:postId/comments', getPostComments);
 
 // File download
-postsRouter.get('/:postId/comments/:commentId/audio', downloadAudio);
+postsRouter.get('/audio/:commentId', downloadAudio);
 
 module.exports = postsRouter;
