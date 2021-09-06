@@ -44,7 +44,7 @@ const tests = [
       },
       {
         label: 'should not be able to register with existing username',
-        arrange: () => {}, // TODO: could confirm user exists
+        arrange: () => {},
         act: () => {
           return request(app)
             .post('/api/auth/register')
@@ -60,7 +60,7 @@ const tests = [
       },
       {
         label: 'should not have case-sensitive usernames',
-        arrange: () => {}, // TODO: could confirm user exists
+        arrange: () => {},
         act: () => {
           return request(app)
             .post('/api/auth/register')
@@ -77,7 +77,7 @@ const tests = [
       {
         label:
           'should not be able to register with username less than 3 characters',
-        arrange: () => {}, // TODO: could confirm user exists
+        arrange: () => {},
         act: () => {
           return request(app)
             .post('/api/auth/register')
@@ -94,7 +94,7 @@ const tests = [
       {
         label:
           'should not be able to register with username longer than 20 characters',
-        arrange: () => {}, // TODO: could confirm user exists
+        arrange: () => {},
         act: () => {
           return request(app)
             .post('/api/auth/register')
@@ -110,7 +110,7 @@ const tests = [
       },
       {
         label: 'should not be able to register with non-alphanumeric username',
-        arrange: () => {}, // TODO: could confirm user exists
+        arrange: () => {},
         act: () => {
           return request(app)
             .post('/api/auth/register')
@@ -126,7 +126,7 @@ const tests = [
       },
       {
         label: 'should not be able to register with password that is too short',
-        arrange: () => {}, // TODO: could confirm user exists
+        arrange: () => {},
         act: () => {
           return request(app)
             .post('/api/auth/register')
@@ -143,7 +143,7 @@ const tests = [
       },
       {
         label: 'should not be able to register with weak password',
-        arrange: () => {}, // TODO: could confirm user exists
+        arrange: () => {},
         act: () => {
           return request(app)
             .post('/api/auth/register')
@@ -176,7 +176,7 @@ const tests = [
           body: {
             success: true,
             data: (actualValue) => {
-              expect(actualValue).toBeDefined(); // TODO: better way of validating token?
+              expect(actualValue).toBeDefined();
             },
           },
         },
@@ -194,7 +194,7 @@ const tests = [
           body: {
             success: true,
             data: (actualValue) => {
-              expect(actualValue).toBeDefined(); // TODO: better way of validating token?
+              expect(actualValue).toBeDefined();
             },
           },
         },
