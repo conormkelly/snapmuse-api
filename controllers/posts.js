@@ -3,6 +3,13 @@ const ErrorResponse = require('../utils/ErrorResponse');
 
 const postsService = require('../services/posts');
 
+const ERROR_RESPONSE = {
+  NOT_FOUND: new ErrorResponse({
+    statusCode: 404,
+    message: 'Post not found.',
+  }),
+};
+
 exports.loadPosts = asyncHandler(async (req, res, next) => {
   await postsService.load({ count: 10 });
   res.status(201).json({ success: true, message: 'Successfully added posts.' });
@@ -13,9 +20,7 @@ exports.getPostById = asyncHandler(async (req, res, next) => {
 
   const post = await postsService.findById(postId);
   if (!post) {
-    return next(
-      new ErrorResponse({ statusCode: 404, message: 'Post not found.' })
-    );
+    return next(ERROR_RESPONSE.NOT_FOUND);
   }
   return res.status(200).json({ success: true, data: post });
 });

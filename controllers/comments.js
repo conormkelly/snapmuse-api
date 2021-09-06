@@ -5,7 +5,16 @@ const postsService = require('../services/posts');
 const commentsService = require('../services/comments');
 const audioStorageService = require('../services/audioStorage');
 
-const xss = require('xss');
+const ERROR_RESPONSE = {
+  NOT_FOUND: new ErrorResponse({
+    statusCode: 404,
+    message: 'Post not found.',
+  }),
+  DOWNLOAD_FAILED: new ErrorResponse({
+    statusCode: 500,
+    message: 'Error downloading file. Try again later.',
+  }),
+};
 
 exports.addComment = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
@@ -13,9 +22,7 @@ exports.addComment = asyncHandler(async (req, res, next) => {
   // Validate post exists
   const post = await postsService.findById(postId);
   if (!post) {
-    return next(
-      new ErrorResponse({ statusCode: 404, message: 'Post not found.' })
-    );
+    return next(ERROR_RESPONSE.NOT_FOUND);
   }
 
   const comment = await commentsService.addComment({
@@ -54,12 +61,7 @@ exports.downloadAudio = (req, res, next) => {
     .getFileReadstream(req.params.commentId)
     .on('error', (err) => {
       console.log('File download error:', err);
-      next(
-        new ErrorResponse({
-          statusCode: 500,
-          message: 'Error downloading file. Try again later.',
-        })
-      );
+      next(ERROR_RESPONSE.DOWNLOAD_FAILED);
     })
     .pipe(res);
 };
