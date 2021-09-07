@@ -5,11 +5,7 @@ const postsRouter = express.Router();
 const { getAllPosts, getPostById, loadPosts } = require('../controllers/posts');
 
 // Controller methods
-const {
-  addComment,
-  getPostComments,
-  downloadAudio,
-} = require('../controllers/comments');
+const { addComment, getPostComments } = require('../controllers/comments');
 
 // Auth middleware
 const { adminOnly } = require('../middleware/auth');
@@ -22,8 +18,5 @@ postsRouter.post('/', adminOnly, loadPosts);
 // Comments
 postsRouter.post('/:postId/comments', addComment);
 postsRouter.get('/:postId/comments', getPostComments);
-
-// File download
-postsRouter.get('/audio/:commentId', downloadAudio);
 
 module.exports = postsRouter;
