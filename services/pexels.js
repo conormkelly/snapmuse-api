@@ -26,7 +26,8 @@ async function getCuratedPhotos({ count, pageSize }) {
   let page = 1;
   while (posts.length !== count) {
     const pexelResponse = await pexelsClient.photos.curated({
-      per_page: Math.max(pageSize, count, page),
+      per_page: Math.max(pageSize, count),
+      page,
     });
 
     for (const photo of pexelResponse.photos) {
