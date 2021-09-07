@@ -56,6 +56,7 @@ exports.getPostComments = asyncHandler(async (req, res, next) => {
 });
 
 exports.downloadAudio = (req, res, next) => {
+  res.setHeader('Content-Type', 'audio/mpeg');
   res.setHeader('Content-Disposition', 'attachment');
   return audioStorageService
     .getFileReadstream(req.params.commentId)
